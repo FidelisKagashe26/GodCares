@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ post.title }} - GOD CARES 365{% endblock %}
+
+{% block extra_css %}
+<style type="text/tailwindcss">
+  .page-post .icon-chip{
+    background: color-mix(in oklab, var(--accent-600) 18%, white 82%);
+    color: color-mix(in oklab, var(--accent-600) 90%, black 10%);
+    @apply text-xs px-3 py-1 rounded-none;
+  }
+  .dark .page-post .icon-chip{
+    background: color-mix(in oklab, var(--accent-600) 22%, black 78%);
+    color: white;
+  }
+  .page-post .article-card{ @apply overflow-hidden; }
+  .page-post .cover{ @apply w-full h-64 object-cover; }
+
+  .page-post .share-btn{
+    @apply text-center border-2 rounded-none p-2 transition-colors;
+    border-color: color-mix(in oklab, var(--accent-600) 55%, transparent);
+    color: var(--accent-600);
+  }
+  .page-post .share-btn:hover{ background: var(--accent-600); color: white; border-color: var(--accent-600); }
+
+  .page-post .btn-accent{
+    background: var(--accent-600);
+    border-color: color-mix(in oklab, var(--accent-600) 90%, black 10%);
+    @apply inline-flex items-center justify-center px-6 py-3 font-semibold text-white border-2 rounded-none transition-colors;
+  }
+  .page-post .btn-accent:hover{ background: color-mix(in oklab, var(--accent-600) 85%, black 15%); }
+
+  .page-post .title{ @apply text-gray-800 dark:text-white; }
+  .page-post .meta{ @apply text-sm text-gray-600 dark:text-gray-400; }
+  .page-post .meta i{ color: var(--accent-600); }
+
+  .page-post .newsletter{
+    background: color-mix(in oklab, var(--accent-600) 20%, white 80%);
+    @apply text-gray-900 rounded-none;
+  }
+  .dark .page-post .newsletter{
+    background: color-mix(in oklab, var(--accent-600) 18%, black 82%);
+    @apply text-white;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-post py-12">
+  <div class="page-container px-6">
+
+    <!-- Breadcrumb -->
+    <nav class="mb-8">
+      <ol class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+        <li><a href="{% url 'home' %}" class="hover:underline" style="color:var(--accent-600)">Nyumbani</a></li>
+        <li class="opacity-60">/</li>
+        <li><a href="{% url 'news' %}" class="hover:underline" style="color:var(--accent-600)">Habari</a></li>
+        <li class="opacity-60">/</li>
+        <li class="text-gray-800 dark:text-white">{{ post.title|truncatewords:5 }}</li>
+      </ol>
+    </nav>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Makala -->
+      <div class="lg:col-span-2">
+        <article class="card p-8 article-card">
+          {% if post.featured_image %}
+          <div class="mb-6 -mx-8">
+            <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" class="cover">
+          </div>
+          {% endif %}
+
+          <header class="mb-6">
+            <div class="flex items-center gap-2 mb-4">
+              {% if post.category %}
+              <a href="{% url 'news' %}?category={{ post.category.slug }}" class="icon-chip">{{ post.category.name }}</a>
+              {% endif %}
+              {% if post.featured %}
+              <span class="icon-chip"><i class="fas fa-star mr-1"></i>Maalum</span>
+              {% endif %}
+            </div>
+
+            <h1 class="title text-3xl font-bold mb-4">{{ post.title }}</h1>
+
+            <div class="flex items-center justify-between meta">
+              <div class="flex flex-wrap items-center gap-4">
+                <span class="flex items-center"><i class="fas fa-user mr-2"></i>{{ post.author.get_full_name|default:post.author.username }}</span>
+                <span class="flex items-center"><i class="fas fa-calendar mr-2"></i>{{ post.published_at|date:"d M Y" }}</span>
+                <span class="flex items-center"><i class="fas fa-eye mr-2"></i>{{ post.views }} mara</span>
+              </div>
+
+              <div class="hidden sm:flex items-center gap-2">
+                <span class="text-xs">Shiriki:</span>
+                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="share-btn"><i class="fab fa-facebook"></i></a>
+                <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ post.title }}" target="_blank" class="share-btn"><i class="fab fa-twitter"></i></a>
+                <a href="https://wa.me/?text={{ post.title }} {{ request.build_absolute_uri }}" target="_blank" class="share-btn"><i class="fab fa-whatsapp"></i></a>
+              </div>
+            </div>
+          </header>
+
+          <div class="prose prose-lg max-w-none dark:prose-invert">
+            {{ post.content|safe }}
+          </div>
+
+          {% if post.category %}
+          <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Kategoria:</span>
+              <a href="{% url 'news' %}?category={{ post.category.slug }}" class="icon-chip hover:opacity-90">{{ post.category.name }}</a>
+            </div>
+          </div>
+          {% endif %}
+        </article>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="space-y-6">
+        {% if related_posts %}
+        <div class="card p-6">
+          <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Makala Zinazohusiana</h3>
+          <div class="space-y-4">
+            {% for related_post in related_posts %}
+            <a href="{% url 'news_detail' related_post.slug %}" class="block group">
+              <div class="flex gap-3">
+                {% if related_post.featured_image %}
+                <img src="{{ related_post.featured_image.url }}" alt="{{ related_post.title }}" class="w-16 h-16 object-cover rounded-lg">
+                {% else %}
+                <div class="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                  <i class="fas fa-newspaper text-gray-400"></i>
+                </div>
+                {% endif %}
+                <div class="flex-1">
+                  <h4 class="font-medium text-sm text-gray-800 dark:text-white group-hover:underline" style="text-decoration-color:var(--accent-600)">{{ related_post.title|truncatewords:8 }}</h4>
+                  <p class="text-xs text-gray-500 mt-1">{{ related_post.published_at|date:"d M Y" }}</p>
+                </div>
+              </div>
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Newsletter -->
+        <div class="card p-6 newsletter">
+          <h3 class="text-lg font-semibold mb-3">Jiunge na Jamii Yetu</h3>
+          <p class="text-sm mb-4 opacity-90">Pokea habari mpya za kiroho moja kwa moja kwenye barua pepe yako.</p>
+          <form class="space-y-3">
+            <input type="email" placeholder="Barua pepe yako" class="w-full px-3 py-2 rounded-none border-2"
+                   style="border-color:color-mix(in oklab, var(--accent-600) 25%, transparent)">
+            <button type="submit" class="btn-accent w-full">Jiunge Sasa</button>
+          </form>
+        </div>
+
+        <!-- Maarufu -->
+        <div class="card p-6">
+          <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Makala Maarufu</h3>
+          <div class="space-y-3">
+            <div class="flex items-center gap-3 text-sm">
+              <span class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs"
+                    style="background:color-mix(in oklab, var(--accent-600) 18%, white 82%); color:var(--accent-600);">1</span>
+              <a href="#" class="flex-1 text-gray-800 dark:text-white hover:underline" style="text-decoration-color:var(--accent-600)">Jinsi ya Kujenga Imani Imara</a>
+            </div>
+            <div class="flex items-center gap-3 text-sm">
+              <span class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs"
+                    style="background:color-mix(in oklab, var(--accent-600) 18%, white 82%); color:var(--accent-600);">2</span>
+              <a href="#" class="flex-1 text-gray-800 dark:text-white hover:underline" style="text-decoration-color:var(--accent-600)">Umuhimu wa Maombi ya Pamoja</a>
+            </div>
+            <div class="flex items-center gap-3 text-sm">
+              <span class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs"
+                    style="background:color-mix(in oklab, var(--accent-600) 18%, white 82%); color:var(--accent-600);">3</span>
+              <a href="#" class="flex-1 text-gray-800 dark:text-white hover:underline" style="text-decoration-color:var(--accent-600)">Mafunzo ya Biblia kwa Familia</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

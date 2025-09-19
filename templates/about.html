@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+
+{% block title %}Kuhusu Sisi - GOD CARES 365{% endblock %}
+
+{% block extra_css %}
+<style type="text/tailwindcss">
+  .page-about .icon-slab{
+    border:2px solid color-mix(in oklab, var(--accent-600) 65%, transparent);
+    background: color-mix(in oklab, var(--accent-600) 85%, white 15%);
+    @apply w-16 h-16 flex items-center justify-center text-white rounded-none;
+  }
+
+  /* Section headings: underline ya accent */
+  .page-about .section-title{ @apply relative inline-block pb-2; }
+  .page-about .section-title::after{
+    content:""; position:absolute; left:0; bottom:0; height:3px; width:64px; background:var(--accent-600);
+  }
+
+  /* History: stripe ya kushoto, zima stripe ya juu ya .card */
+  .page-about .history.card{ position:relative; overflow:hidden; }
+  .page-about .history.card::before{ display:none; }  /* zima top stripe ya default card */
+  .page-about .history.card::after{
+    content:""; position:absolute; left:0; top:0; bottom:0; width:8px; background:var(--accent-600);
+  }
+
+  /* Team avatars: square slab, rangi moja */
+  .page-about .avatar-slab{
+    border:2px solid color-mix(in oklab, var(--accent-600) 65%, transparent);
+    background: color-mix(in oklab, var(--accent-600) 90%, white 10%);
+    @apply w-24 h-24 flex items-center justify-center text-white font-bold text-2xl mx-auto rounded-none;
+  }
+
+  /* Form: square + accent focus */
+  .page-about .form-input{
+    @apply w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-700 rounded-none bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100;
+  }
+  .page-about .form-input:focus{
+    outline: none;
+    box-shadow: 0 0 0 3px var(--accent-200);
+    border-color: var(--accent-600);
+  }
+  .page-about .btn-accent{
+    background: var(--accent-600); border-color: color-mix(in oklab, var(--accent-600) 90%, black 10%);
+    @apply w-full text-white font-semibold px-6 py-3 rounded-none border-2 transition-colors;
+  }
+  .page-about .btn-accent:hover{ background: var(--accent-700); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-about py-12">
+  <div class="page-container px-6">
+
+    <!-- Header -->
+    <header class="text-center mb-12">
+      <div class="icon-slab mx-auto mb-4">
+        <i class="fas fa-info-circle text-2xl"></i>
+      </div>
+      <h1 class="text-4xl font-bold mb-3 text-gray-800 dark:text-white">Kuhusu Sisi</h1>
+      <p class="text-lg max-w-2xl mx-auto text-gray-600 dark:text-gray-300">
+        Jifunze zaidi kuhusu historia, dhamira, na timu ya GOD CARES 365
+      </p>
+    </header>
+
+    <!-- Mission & Vision -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+      <div class="card p-8">
+        <div class="w-12 h-12 flex items-center justify-center mb-4 rounded-none"
+             style="background:color-mix(in oklab, var(--accent-600) 15%, white 85%); color:var(--accent-600);">
+          <i class="fas fa-bullseye text-xl"></i>
+        </div>
+        <h2 class="section-title text-2xl font-bold mb-4 text-gray-800 dark:text-white">Dhamira Yetu</h2>
+        <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
+          Kupitia GOD CARES 365, tunalenga kueneza Upendo wa Mungu na Habari Njema kwa kila mtu. 
+          Tunataka kutoa mafunzo ya Biblia yaliyojengwa kwa ufasaha, habari zenye kukutia moyo, 
+          na rasilimali za kiroho ambazo zitawasaidia watu kujenga imani yao na kupata matumaini 
+          katika magumu wanayopitia.
+        </p>
+      </div>
+
+      <div class="card p-8">
+        <div class="w-12 h-12 flex items-center justify-center mb-4 rounded-none"
+             style="background:color-mix(in oklab, var(--accent-600) 15%, white 85%); color:var(--accent-600);">
+          <i class="fas fa-heart text-xl"></i>
+        </div>
+        <h2 class="section-title text-2xl font-bold mb-4 text-gray-800 dark:text-white">Maono Yetu</h2>
+        <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
+          Maono yetu ni kuona jamii ya waumini ikinyanyuka katika umoja wa kiroho, ikisaidia 
+          watu kupata neema na uponyaji wa kiroho. Tunataka kuwa kitovu kinachoaminika kupitia 
+          mitandao yote, ambapo kila mtu, popote alipo, anaweza kupata neno la Mungu, ushauri, 
+          na msaada wa kiroho.
+        </p>
+      </div>
+    </section>
+
+    <!-- History -->
+    <section class="history card p-8 mb-16">
+      <h2 class="section-title text-2xl font-bold mb-6 text-gray-800 dark:text-white">Historia Yetu</h2>
+      <p class="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
+        GOD CARES 365 ilianzishwa mnamo mwaka 2023 na kundi la vijana wapenzi wa mafundisho ya 
+        Biblia. Ilikusudiwa kuwa na tovuti yenye kutoa habari na rasilimali za kiroho kila siku, 
+        ili waweze kupata faraja, nguvu, na mafunzo yatakayowaimarisha katika mwendo wao na Mungu.
+      </p>
+      <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
+        Tulianza kama kikundi kidogo cha waumini wanayosoma pamoja, na sasa tumekuwa jukwaa 
+        lenye watazamaji wengi kutoka sehemu mbalimbali za dunia. Kila siku, tunajitahidi kutoa 
+        maudhui ya hali ya juu yanayojenga imani na kuimarisha uhusiano wa kibinafsi na Mungu.
+      </p>
+    </section>
+
+    <!-- Team -->
+    <section class="mb-16">
+      <h2 class="section-title text-2xl font-bold text-center mb-10 text-gray-800 dark:text-white">
+        <i class="fas fa-users mr-2"></i> Timu Yetu
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="card p-6 text-center">
+          <div class="avatar-slab mb-4"><span>FV</span></div>
+          <h3 class="text-xl font-semibold mb-2 text-gray-800 dark:text-white">Fidelis Y. Vitabu</h3>
+          <p class="text-gray-600 dark:text-gray-300 mb-2">Mwanzilishi & Muongoza Masomo ya Biblia</p>
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            Mwongozi wa kiroho mwenye uzoefu wa miaka mingi katika mafundisho ya Biblia
+          </p>
+        </div>
+
+        <div class="card p-6 text-center">
+          <div class="avatar-slab mb-4"><span>AS</span></div>
+          <h3 class="text-xl font-semibold mb-2 text-gray-800 dark:text-white">Anna M. Simba</h3>
+          <p class="text-gray-600 dark:text-gray-300 mb-2">Mhariri Mkuu wa Habari & Vipengele</p>
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            Mhariri mwenye ujuzi wa kuandika makala za kiroho zenye kuvutia
+          </p>
+        </div>
+
+        <div class="card p-6 text-center">
+          <div class="avatar-slab mb-4"><span>ZM</span></div>
+          <h3 class="text-xl font-semibold mb-2 text-gray-800 dark:text-white">Zawadi A. Mwinyi</h3>
+          <p class="text-gray-600 dark:text-gray-300 mb-2">Mratibu wa Mitandao ya Kijamii</p>
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            Mtaalamu wa mitandao ya kijamii na mawasiliano ya kidijitali
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="card p-8">
+      <h2 class="section-title text-2xl font-bold mb-6 text-gray-800 dark:text-white">Wasiliana Nasi</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div>
+          <div class="space-y-4">
+            <div class="flex items-center space-x-3">
+              <i class="fas fa-envelope" style="color:var(--accent-600)"></i>
+              <span class="text-gray-600 dark:text-gray-300">fmklink@gmail.com</span>
+            </div>
+            <div class="flex items-center space-x-3">
+              <i class="fas fa-phone" style="color:var(--accent-600)"></i>
+              <span class="text-gray-600 dark:text-gray-300">+255 767 525 234</span>
+            </div>
+            <div class="flex items-center space-x-3">
+              <i class="fas fa-map-marker-alt" style="color:var(--accent-600)"></i>
+              <span class="text-gray-600 dark:text-gray-300">Dar es Salaam, Tanzania</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <form class="space-y-4">
+            <input type="text" placeholder="Jina Lako" class="form-input" />
+            <input type="email" placeholder="Barua Pepe" class="form-input" />
+            <textarea rows="4" placeholder="Ujumbe Wako" class="form-input"></textarea>
+            <button type="submit" class="btn-accent">Tuma Ujumbe</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+{% endblock %}

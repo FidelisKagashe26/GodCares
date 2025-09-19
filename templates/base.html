@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="sw" class="h-full accent-green"><!-- badilisha kuwa accent-blue au accent-yellow ukitaka -->
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}GOD CARES 365 - Tovuti ya Kiroho{% endblock %}</title>
+  <meta name="description" content="{% block description %}Tovuti ya kiroho yenye masomo ya Biblia, maombi, na rasilimali za imani{% endblock %}">
+  <meta name="keywords" content="{% block keywords %}kiroho, biblia, maombi, imani, tanzania, masomo{% endblock %}">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: {
+        fontFamily: { sans: ['Inter','ui-sans-serif','system-ui'] },
+        boxShadow: {
+          square: '0 6px 0 0 rgba(0,0,0,0.06)',
+          squareHover: '0 8px 0 0 rgba(0,0,0,0.10)',
+          focus: '0 0 0 3px var(--accent-200)'
+        }
+      }}
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+  <style type="text/tailwindcss">
+    /* -------- Accent (chagua 1 kwa kuweka class kwenye <html>) -------- */
+    html.accent-green { --accent-50:#ECFDF5; --accent-100:#D1FAE5; --accent-200:#A7F3D0; --accent-400:#34D399; --accent-500:#10B981; --accent-600:#059669; --accent-700:#047857; }
+    html.accent-blue  { --accent-50:#EFF6FF; --accent-100:#DBEAFE; --accent-200:#BFDBFE; --accent-400:#60A5FA; --accent-500:#3B82F6; --accent-600:#2563EB; --accent-700:#1D4ED8; }
+    html.accent-yellow{ --accent-50:#FFFBEB; --accent-100:#FEF3C7; --accent-200:#FDE68A; --accent-400:#FBBF24; --accent-500:#F59E0B; --accent-600:#D97706; --accent-700:#B45309; }
+
+    /* Kikuta chepesi cha square kwenye background */
+    body::before{
+      content:""; position:fixed; inset:0; pointer-events:none;
+      background-image:
+        linear-gradient(to right, rgba(0,0,0,.035) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0,0,0,.035) 1px, transparent 1px);
+      background-size:32px 32px;
+    }
+    .dark body::before{
+      background-image:
+        linear-gradient(to right, rgba(255,255,255,.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,.06) 1px, transparent 1px);
+    }
+
+    .top-accent{ height:3px; background:var(--accent-600); }
+    .page-container{ @apply max-w-7xl mx-auto px-4; }
+
+    .card{ @apply relative bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-800 rounded-none shadow-square transition-shadow; }
+    .card:hover{@apply shadow-squareHover;}
+    .card::before{ content:""; position:absolute; left:0; right:0; top:0; height:3px; background:var(--accent-600); }
+
+    .btn-primary{ background:var(--accent-600); border-color:var(--accent-700); @apply rounded-none font-semibold px-6 py-3 text-white border-2 transition-colors; }
+    .btn-primary:hover{ background:var(--accent-700); }
+    .btn-secondary{ @apply rounded-none font-semibold px-6 py-3 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-2 border-gray-300 dark:border-gray-700 transition-colors; }
+    .btn-secondary:focus, .btn-primary:focus{ box-shadow: var(--tw-shadow,0 0 #0000), 0 0 0 3px var(--accent-200); }
+
+    /* Desktop nav (NO white hover) */
+    .nav-link{
+      @apply relative flex items-center px-4 py-3 rounded-none text-sm font-semibold tracking-wide
+             text-gray-700 hover:text-gray-900
+             dark:text-gray-300 dark:hover:text-white
+             border-b-4 border-transparent;
+    }
+    .nav-link:hover{ background-color: transparent !important; }
+    .nav-link.active{ background:transparent !important; border-bottom-color:var(--accent-600); @apply text-gray-900 dark:text-white; }
+    .nav-link::after{ content:""; position:absolute; left:0; bottom:0; height:2px; width:0; background:var(--accent-600); transition:width .2s ease; }
+    .nav-link:hover::after{ width:100%; }
+
+    .logo-slab{ border:2px solid color-mix(in oklab, var(--accent-600) 70%, transparent); background: color-mix(in oklab, var(--accent-500) 85%, white 15%); @apply w-10 h-10 flex items-center justify-center rounded-none; }
+
+    .topbar{ @apply transition-shadow; }
+    .topbar.scrolled{ box-shadow: 0 8px 24px rgba(0,0,0,.08); }
+    #scroll-progress{ @apply fixed top-0 left-0 h-1 z-[60]; width:0; background: var(--accent-600); }
+
+    main{ @apply mt-[84px]; }
+
+    .content-frame{ @apply relative border-2 border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-900/70 backdrop-blur; }
+    .content-frame::after{ content:""; position:absolute; left:-8px; top:-8px; width:18px; height:18px; background:var(--accent-600); box-shadow: 14px 0 0 0 color-mix(in oklab, var(--accent-600) 80%, black 0%), 0 14px 0 0 color-mix(in oklab, var(--accent-600) 60%, black 0%); }
+
+    .footer-col{ @apply border-2 border-transparent md:border-l-2 md:border-l-gray-800 rounded-none; }
+    .footer-title{ @apply text-xl font-extrabold text-white tracking-wide; }
+
+    /* ---------- MOBILE NAV (rahisi na imara) ---------- */
+    /* Panel iko ndani ya header; default ni kufungwa kwa height */
+    #mobile-menu{
+      @apply lg:hidden border-t-2 border-gray-200 dark:border-gray-800 overflow-hidden;
+      max-height: 0; transition: max-height .25s ease;
+    }
+    #mobile-menu.open{ max-height: 28rem; } /* slide-down */
+    .mobile-nav-link{
+      @apply flex items-center gap-3 px-4 py-4 text-[15px] font-semibold
+             text-gray-800 dark:text-gray-100 bg-white dark:bg-gray-900
+             border-b border-gray-200 dark:border-gray-800;
+    }
+    .mobile-nav-link i{ color: var(--accent-600); }
+    .mobile-nav-link:active{ @apply bg-gray-100 dark:bg-gray-800; }
+  </style>
+
+  {% block extra_css %}{% endblock %}
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-white font-sans">
+
+  <div id="scroll-progress"></div>
+
+  <!-- NAV (fixed) -->
+  <nav id="topbar" class="topbar fixed top-0 inset-x-0 z-50 bg-white/90 dark:bg-gray-950/90 backdrop-blur border-b-2 border-gray-200 dark:border-gray-800">
+    <div class="top-accent"></div>
+    <div class="page-container">
+      <div class="flex items-center justify-between h-20">
+        <!-- Logo -->
+        <a href="{% url 'home' %}" class="flex items-center gap-3">
+          <div class="logo-slab"><span class="text-white font-black text-sm">GC</span></div>
+          <span class="font-extrabold text-xl tracking-wider">GOD CARES 365</span>
+        </a>
+
+        <!-- Desktop nav -->
+        <div class="hidden lg:flex items-stretch gap-1">
+          <a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"><i class="fas fa-home mr-2"></i> Nyumbani</a>
+          <a href="{% url 'about' %}" class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}"><i class="fas fa-info-circle mr-2"></i> Kuhusu Sisi</a>
+          <a href="{% url 'news' %}" class="nav-link {% if 'news' in request.resolver_match.url_name %}active{% endif %}"><i class="fas fa-newspaper mr-2"></i> Habari</a>
+          <a href="{% url 'bible_studies' %}" class="nav-link {% if 'bible' in request.resolver_match.url_name %}active{% endif %}"><i class="fas fa-book mr-2"></i> Mafunzo</a>
+          <a href="{% url 'events' %}" class="nav-link {% if request.resolver_match.url_name == 'events' %}active{% endif %}"><i class="fas fa-calendar mr-2"></i> Matukio</a>
+          <a href="{% url 'prayer_requests' %}" class="nav-link {% if request.resolver_match.url_name == 'prayer_requests' %}active{% endif %}"><i class="fas fa-heart mr-2"></i> Maombi</a>
+          <a href="{% url 'donations' %}" class="nav-link {% if request.resolver_match.url_name == 'donations' %}active{% endif %}"><i class="fas fa-donate mr-2"></i> Michango</a>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center gap-2">
+          <button id="theme-toggle" class="p-2 border-2 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-none"
+                  aria-label="Toggle theme" title="Badilisha mwanga/giza">
+            <span id="theme-icon-sun" class="hidden" style="color:var(--accent-600)"><i class="fas fa-sun"></i></span>
+            <span id="theme-icon-moon" class="hidden" style="color:var(--accent-400)"><i class="fas fa-moon"></i></span>
+          </button>
+          <button id="mobile-menu-btn" class="lg:hidden p-2 border-2 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  aria-controls="mobile-menu" aria-expanded="false">
+            <i class="fas fa-bars"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile nav (slide-down) -->
+      <div id="mobile-menu">
+        <a href="{% url 'home' %}" class="mobile-nav-link"><i class="fas fa-home"></i> <span>Nyumbani</span></a>
+        <a href="{% url 'about' %}" class="mobile-nav-link"><i class="fas fa-info-circle"></i> <span>Kuhusu Sisi</span></a>
+        <a href="{% url 'news' %}" class="mobile-nav-link"><i class="fas fa-newspaper"></i> <span>Habari</span></a>
+        <a href="{% url 'bible_studies' %}" class="mobile-nav-link"><i class="fas fa-book"></i> <span>Mafunzo</span></a>
+        <a href="{% url 'events' %}" class="mobile-nav-link"><i class="fas fa-calendar"></i> <span>Matukio</span></a>
+        <a href="{% url 'prayer_requests' %}" class="mobile-nav-link"><i class="fas fa-heart"></i> <span>Maombi</span></a>
+        <a href="{% url 'donations' %}" class="mobile-nav-link"><i class="fas fa-donate"></i> <span>Michango</span></a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="min-h-screen">
+    <div class="page-container py-10">
+      <div class="content-frame p-6 md:p-10">
+        <div class="grid grid-cols-1 gap-6">
+          {% block content %}{% endblock %}
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-gray-950 text-gray-300 border-t-8 border-gray-800">
+    <div class="top-accent"></div>
+    <div class="page-container py-12">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <!-- About -->
+        <div class="footer-col md:border-l-0 md:pl-0">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="logo-slab"><span class="text-white font-black text-sm">GC</span></div>
+            <h3 class="footer-title">GOD CARES 365</h3>
+          </div>
+          <div class="p-4">
+            <p class="text-gray-300">Tovuti hii imeundwa kukuimarisha katika imani, kukuunga mkono katika maombi, na kukupeleka karibu na Mungu.</p>
+            <div class="flex gap-4 mt-4">
+              <a href="#" class="text-gray-300 hover:text-white transition-colors"><i class="fab fa-facebook text-xl"></i></a>
+              <a href="#" class="text-gray-300 hover:text-white transition-colors"><i class="fab fa-twitter text-xl"></i></a>
+              <a href="#" class="text-gray-300 hover:text-white transition-colors"><i class="fab fa-instagram text-xl"></i></a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="footer-col md:pl-6">
+          <h3 class="footer-title mb-4">Viungo vya Haraka</h3>
+          <div class="p-4">
+            <ul class="space-y-2">
+              <li><a href="{% url 'home' %}" class="hover:text-white transition-colors">Nyumbani</a></li>
+              <li><a href="{% url 'about' %}" class="hover:text-white transition-colors">Kuhusu Sisi</a></li>
+              <li><a href="{% url 'news' %}" class="hover:text-white transition-colors">Habari</a></li>
+              <li><a href="{% url 'bible_studies' %}" class="hover:text-white transition-colors">Mafunzo</a></li>
+              <li><a href="{% url 'prayer_requests' %}" class="hover:text-white transition-colors">Maombi</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Services -->
+        <div class="footer-col md:pl-6">
+          <h3 class="footer-title mb-4">Huduma Zetu</h3>
+          <div class="p-4">
+            <ul class="space-y-2">
+              <li><a href="{% url 'bible_studies' %}" class="hover:text-white transition-colors">Masomo ya Biblia</a></li>
+              <li><a href="{% url 'prayer_requests' %}" class="hover:text-white transition-colors">Maombi ya Pamoja</a></li>
+              <li><a href="{% url 'events' %}" class="hover:text-white transition-colors">Matukio ya Kiroho</a></li>
+              <li><a href="{% url 'donations' %}" class="hover:text-white transition-colors">Michango</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Contact -->
+        <div class="footer-col md:pl-6">
+          <h3 class="footer-title mb-4">Wasiliana Nasi</h3>
+          <div class="p-4 space-y-3">
+            <div class="flex items-center gap-3"><i class="fas fa-envelope" style="color:var(--accent-400)"></i><span>fmklink@gmail.com</span></div>
+            <div class="flex items-center gap-3"><i class="fas fa-phone" style="color:var(--accent-400)"></i><span>+255 767 525 234</span></div>
+            <div class="flex items-center gap-3"><i class="fas fa-map-marker-alt" style="color:var(--accent-400)"></i><span>Dar es Salaam, Tanzania</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-10 pt-8 border-t-2 border-gray-800 text-center text-gray-400">
+        &copy; {{ current_year }} GOD CARES 365. Haki zote zimehifadhiwa.
+      </div>
+    </div>
+  </footer>
+
+  <!-- JS: theme toggle, mobile toggle (imara), sticky shadow, scroll progress -->
+  <script>
+    const html = document.documentElement;
+    const themeBtn = document.getElementById('theme-toggle');
+    const sunI = document.getElementById('theme-icon-sun');
+    const moonI = document.getElementById('theme-icon-moon');
+    const topbar = document.getElementById('topbar');
+    const mobileBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const progress = document.getElementById('scroll-progress');
+
+    // initial theme
+    const saved = localStorage.getItem('gc-theme');
+    if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      html.classList.add('dark');
+    }
+    updateThemeIcons();
+
+    themeBtn?.addEventListener('click', () => {
+      html.classList.toggle('dark');
+      localStorage.setItem('gc-theme', html.classList.contains('dark') ? 'dark' : 'light');
+      updateThemeIcons();
+    });
+    function updateThemeIcons() {
+      const dark = html.classList.contains('dark');
+      if (sunI) sunI.style.display = dark ? 'none' : 'inline-block';
+      if (moonI) moonI.style.display = dark ? 'inline-block' : 'none';
+    }
+
+    // --- Mobile menu (slide-down) ---
+    function toggleMobile(force) {
+      const willOpen = force !== undefined ? force : !mobileMenu.classList.contains('open');
+      if (willOpen) {
+        mobileMenu.classList.add('open');
+        mobileBtn?.setAttribute('aria-expanded', 'true');
+      } else {
+        mobileMenu.classList.remove('open');
+        mobileBtn?.setAttribute('aria-expanded', 'false');
+      }
+    }
+    mobileBtn?.addEventListener('click', () => toggleMobile());
+    // funga uki-bofya kiungo chochote cha mobile
+    mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => toggleMobile(false)));
+    // funga ukipandisha hadi desktop
+    window.addEventListener('resize', () => { if (window.innerWidth >= 1024) toggleMobile(false); });
+
+    // topbar shadow & progress
+    const onScroll = () => {
+      const y = window.scrollY || document.documentElement.scrollTop;
+      topbar?.classList.toggle('scrolled', y > 2);
+      const h = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      progress.style.width = (h > 0 ? (y / h) * 100 : 0) + '%';
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  </script>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>
