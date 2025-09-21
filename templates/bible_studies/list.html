@@ -2,234 +2,222 @@
 
 {% block title %}Mafunzo ya Biblia - GOD CARES 365{% endblock %}
 
+{% block extra_css %}
+<style type="text/tailwindcss">
+  /* Inputs: square + accent focus (sawa na About/News) */
+  .form-input{
+    @apply w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-700 rounded-none bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100;
+  }
+  .form-input:focus{ outline:none; box-shadow:0 0 0 3px var(--accent-200); border-color:var(--accent-600); }
+
+  /* Media frames */
+  .media-16x9{ position:relative; width:100%; padding-top:56.25%; }
+  .media-16x9 > img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="py-12">
-    <div class="container mx-auto px-6">
-        <!-- Header -->
-        <header class="text-center mb-12">
-            <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i class="fas fa-book text-white text-2xl"></i>
-            </div>
-            <h1 class="text-4xl font-bold mb-4 text-gray-800 dark:text-white">Mafunzo ya Biblia</h1>
-            <p class="text-lg max-w-2xl mx-auto text-gray-600 dark:text-gray-300">
-                Pata masomo ya kina ya Biblia yaliyopangwa kwa misimu na mfululizo
-            </p>
-        </header>
+<div class="py-6">
+  <div class="container mx-auto px-3">
+    <!-- Header -->
+    <header class="text-center mb-6">
+      <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-blue-600 rounded-full grid place-items-center mx-auto mb-4">
+        <i class="fas fa-book text-white text-2xl"></i>
+      </div>
+      <h1 class="text-4xl font-bold mb-4 text-gray-800 dark:text-white">Mafunzo ya Biblia</h1>
+      <p class="text-lg max-w-2xl mx-auto text-gray-600 dark:text-gray-300">
+        Pata masomo ya kina ya Biblia yaliyopangwa kwa misimu na mfululizo
+      </p>
+    </header>
 
-        <!-- Search and Filter -->
-        <div class="flex flex-col md:flex-row gap-4 mb-8">
-            <form method="get" class="flex flex-col md:flex-row gap-4 w-full">
-                <div class="relative flex-1">
-                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
-                    <input
-                        type="text"
-                        name="search"
-                        value="{{ search_query }}"
-                        placeholder="Tafuta masomo..."
-                        class="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500"
-                    />
-                </div>
-                <div class="relative">
-                    <i class="fas fa-filter absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
-                    <select
-                        name="season"
-                        class="pl-10 pr-8 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500"
-                    >
-                        <option value="all" {% if season_filter == 'all' %}selected{% endif %}>Misimu Yote</option>
-                        {% for season in seasons %}
-                            <option value="{{ season.slug }}" {% if season_filter == season.slug %}selected{% endif %}>
-                                {{ season.name }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
-                    Tafuta
-                </button>
-            </form>
+    <!-- Search & Filter (GRID) -->
+    <div class="mb-8">
+      <form method="get" class="grid grid-cols-1 md:grid-cols-[1fr,220px,auto] gap-4 items-stretch">
+        <div class="relative">
+          <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
+          <input type="text" name="search" value="{{ search_query }}" placeholder="Tafuta masomo..." class="form-input pl-10" />
         </div>
+        <div class="relative">
+          <i class="fas fa-filter absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
+          <select name="season" class="form-input pl-10 pr-8">
+            <option value="all" {% if season_filter == 'all' %}selected{% endif %}>Misimu Yote</option>
+            {% for season in seasons %}
+              <option value="{{ season.slug }}" {% if season_filter == season.slug %}selected{% endif %}>{{ season.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <button type="submit" class="grid place-items-center px-6 py-3 rounded-none font-semibold text-white border-2 transition-colors"
+                style="background:var(--accent-600); border-color:color-mix(in oklab, var(--accent-600) 90%, black 10%);">
+          Tafuta
+        </button>
+      </form>
+    </div>
 
-        <!-- Seasons Overview -->
-        {% if seasons %}
-        <section class="mb-12">
-            <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">Misimu ya Masomo</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {% for season in seasons %}
-                <div class="card p-6 hover:scale-105 transition-transform">
-                    {% if season.image %}
-                    <img src="{{ season.image.url }}" alt="{{ season.name }}" class="w-full h-32 object-cover rounded-lg mb-4">
-                    {% else %}
-                    <div class="w-full h-32 bg-gradient-to-r from-green-400 to-blue-500 rounded-lg mb-4 flex items-center justify-center">
-                        <i class="fas fa-book-open text-white text-3xl"></i>
-                    </div>
-                    {% endif %}
-                    
-                    <h3 class="text-lg font-semibold mb-2 text-gray-800 dark:text-white">{{ season.name }}</h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">{{ season.description|truncatewords:15 }}</p>
-                    
-                    <div class="flex items-center justify-between text-xs text-gray-500 mb-4">
-                        <span>{{ season.series.count }} Mfululizo</span>
-                        {% if season.start_date %}
-                        <span>{{ season.start_date|date:"M Y" }}</span>
-                        {% endif %}
-                    </div>
-                    
-                    <!-- Series in this season -->
-                    <div class="space-y-2">
-                        {% for series in season.series.all|slice:":3" %}
-                          {% with lessons=series.lessons.all %}
-                            {% for l in lessons|slice:":1" %}
-                              <a href="{% url 'lesson_detail' l.slug %}" 
-                                 class="block text-sm text-green-600 hover:text-green-700 hover:underline">
-                                <i class="fas fa-play-circle mr-1"></i>{{ series.name }}
-                              </a>
-                            {% empty %}
-                              <span class="block text-sm text-gray-400 cursor-not-allowed">
-                                <i class="fas fa-play-circle mr-1"></i>{{ series.name }} (hakuna somo)
-                              </span>
-                            {% endfor %}
-                          {% endwith %}
-                        {% endfor %}
-                        {% if season.series.count > 3 %}
-                        <p class="text-xs text-gray-500">Na mengine {{ season.series.count|add:"-3" }}...</p>
-                        {% endif %}
-                    </div>
-                </div>
-                {% endfor %}
+    <!-- Seasons Overview -->
+    {% if seasons %}
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">Misimu ya Masomo</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for season in seasons %}
+        <div class="card p-6">
+          {% if season.image %}
+            <img src="{{ season.image.url }}" alt="{{ season.name }}" class="w-full h-32 object-cover rounded-none mb-4">
+          {% else %}
+            <div class="w-full h-32 bg-gradient-to-r from-green-400 to-blue-500 rounded-none mb-4 grid place-items-center">
+              <i class="fas fa-book-open text-white text-3xl"></i>
             </div>
-        </section>
-        {% endif %}
+          {% endif %}
 
-        <!-- Lessons Grid -->
-        {% if lessons_page %}
-        <section>
-            <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
-                {% if search_query %}
-                    Matokeo ya "{{ search_query }}"
-                {% elif season_filter != 'all' %}
-                    Masomo ya {{ season_filter|title }}
-                {% else %}
-                    Masomo Yote
-                {% endif %}
-            </h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {% for lesson in lessons_page %}
-                <a href="{% url 'lesson_detail' lesson.slug %}" class="card overflow-hidden group hover:scale-105 transition-transform">
-                    <div class="relative">
-                        {% if lesson.featured_image %}
-                        <img src="{{ lesson.featured_image.url }}" alt="{{ lesson.title }}" 
-                             class="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300">
-                        {% else %}
-                        <div class="w-full h-48 bg-gradient-to-r from-green-400 to-blue-500 flex items-center justify-center">
-                            <i class="fas fa-book-open text-white text-4xl"></i>
-                        </div>
-                        {% endif %}
-                        
-                        <!-- Content Type Indicators -->
-                        <div class="absolute top-4 right-4 flex space-x-1">
-                            {% if lesson.video_url or lesson.video_embed_code %}
-                            <span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                                <i class="fas fa-video"></i>
-                            </span>
-                            {% endif %}
-                            {% if lesson.pdf_file %}
-                            <span class="bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
-                                <i class="fas fa-file-pdf"></i>
-                            </span>
-                            {% endif %}
-                            {% if lesson.audio_file %}
-                            <span class="bg-green-500 text-white text-xs px-2 py-1 rounded-full">
-                                <i class="fas fa-headphones"></i>
-                            </span>
-                            {% endif %}
-                        </div>
-                        
-                        {% if lesson.duration_minutes %}
-                        <div class="absolute bottom-4 left-4 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded">
-                            {{ lesson.duration_minutes }} dakika
-                        </div>
-                        {% endif %}
-                    </div>
+          <h3 class="text-lg font-semibold mb-2 text-gray-800 dark:text-white">{{ season.name }}</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">{{ season.description|truncatewords:15 }}</p>
 
-                    <div class="p-6">
-                        <div class="text-xs text-green-600 mb-2">
-                            {{ lesson.series.season.name }} • {{ lesson.series.name }}
-                        </div>
-                        
-                        <h3 class="text-lg font-bold mb-3 group-hover:text-green-600 transition-colors text-gray-800 dark:text-white">
-                            {{ lesson.title }}
-                        </h3>
-                        
-                        <p class="text-sm mb-4 text-gray-600 dark:text-gray-300">
-                            {{ lesson.description|truncatewords:20 }}
-                        </p>
-                        
-                        {% if lesson.bible_references %}
-                        <div class="text-xs text-gray-500 mb-4">
-                            <i class="fas fa-bookmark mr-1"></i>{{ lesson.bible_references }}
-                        </div>
-                        {% endif %}
-                        
-                        <div class="flex items-center justify-between text-xs">
-                            <div class="flex items-center space-x-4">
-                                <span class="flex items-center">
-                                    <i class="fas fa-eye mr-1"></i>
-                                    {{ lesson.views }}
-                                </span>
-                                <span class="flex items-center">
-                                    <i class="fas fa-calendar mr-1"></i>
-                                    {{ lesson.created_at|date:"d M Y" }}
-                                </span>
-                            </div>
-                            <div class="flex items-center text-green-600 group-hover:text-green-700">
-                                <span class="text-sm font-medium">Soma</span>
-                                <i class="fas fa-arrow-right ml-1"></i>
-                            </div>
-                        </div>
-                    </div>
-                </a>
+          <div class="grid grid-cols-[1fr,auto] items-center text-xs text-gray-500 mb-4">
+            <span>{{ season.series.count }} Mfululizo</span>
+            {% if season.start_date %}<span>{{ season.start_date|date:"M Y" }}</span>{% endif %}
+          </div>
+
+          <!-- Series (hadi 3) -->
+          <div class="grid gap-2">
+            {% for series in season.series.all|slice:":3" %}
+              {% with lessons=series.lessons.all %}
+                {% for l in lessons|slice:":1" %}
+                  <a href="{% url 'lesson_detail' l.slug %}" class="text-sm text-green-600 hover:text-green-700 hover:underline grid grid-flow-col auto-cols-max items-center gap-2">
+                    <i class="fas fa-play-circle"></i>{{ series.name }}
+                  </a>
+                {% empty %}
+                  <span class="text-sm text-gray-400 grid grid-flow-col auto-cols-max items-center gap-2">
+                    <i class="fas fa-play-circle"></i>{{ series.name }} (hakuna somo)
+                  </span>
                 {% endfor %}
+              {% endwith %}
+            {% endfor %}
+            {% if season.series.count > 3 %}
+              <p class="text-xs text-gray-500">Na mengine {{ season.series.count|add:"-3" }}...</p>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- Lessons Grid -->
+    {% if lessons_page %}
+    <section>
+      <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
+        {% if search_query %}Matokeo ya "{{ search_query }}"
+        {% elif season_filter != 'all' %}Masomo ya {{ season_filter|title }}
+        {% else %}Masomo Yote{% endif %}
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for lesson in lessons_page %}
+        <a href="{% url 'lesson_detail' lesson.slug %}" class="card overflow-hidden group transition-colors hover:bg-gray-50 dark:hover:bg-gray-800">
+          <div class="relative">
+            {% if lesson.featured_image %}
+              <img src="{{ lesson.featured_image.url }}" alt="{{ lesson.title }}" class="w-full h-48 object-cover">
+            {% else %}
+              <div class="w-full h-48 bg-gradient-to-r from-green-400 to-blue-500 grid place-items-center">
+                <i class="fas fa-book-open text-white text-4xl"></i>
+              </div>
+            {% endif %}
+
+            <!-- Aina ya maudhui -->
+            <div class="absolute top-4 right-4 grid grid-flow-col auto-cols-max gap-1">
+              {% if lesson.video_url or lesson.video_embed_code %}
+              <span class="rounded-none text-white text-xs px-2 py-1" style="background:#ef4444;"><i class="fas fa-video"></i></span>
+              {% endif %}
+              {% if lesson.pdf_file %}
+              <span class="rounded-none text-white text-xs px-2 py-1" style="background:#3b82f6;"><i class="fas fa-file-pdf"></i></span>
+              {% endif %}
+              {% if lesson.audio_file %}
+              <span class="rounded-none text-white text-xs px-2 py-1" style="background:#10b981;"><i class="fas fa-headphones"></i></span>
+              {% endif %}
             </div>
 
-            <!-- Pagination -->
-            {% if lessons_page.has_other_pages %}
-            <div class="flex justify-center mt-12 space-x-2">
-                {% if lessons_page.has_previous %}
-                <a href="?page={{ lessons_page.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if season_filter != 'all' %}&season={{ season_filter }}{% endif %}" 
-                   class="px-4 py-2 rounded-lg font-medium transition-colors bg-gray-200 text-gray-700 hover:bg-gray-300">
-                    <i class="fas fa-chevron-left"></i>
-                </a>
-                {% endif %}
-                
-                {% for num in lessons_page.paginator.page_range %}
-                    {% if lessons_page.number == num %}
-                        <span class="px-4 py-2 rounded-lg font-medium bg-green-600 text-white">{{ num }}</span>
-                    {% elif num > lessons_page.number|add:'-3' and num < lessons_page.number|add:'3' %}
-                        <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if season_filter != 'all' %}&season={{ season_filter }}{% endif %}" 
-                           class="px-4 py-2 rounded-lg font-medium transition-colors bg-gray-200 text-gray-700 hover:bg-gray-300">
-                            {{ num }}
-                        </a>
-                    {% endif %}
-                {% endfor %}
-                
-                {% if lessons_page.has_next %}
-                <a href="?page={{ lessons_page.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if season_filter != 'all' %}&season={{ season_filter }}{% endif %}" 
-                   class="px-4 py-2 rounded-lg font-medium transition-colors bg-gray-200 text-gray-700 hover:bg-gray-300">
-                    <i class="fas fa-chevron-right"></i>
-                </a>
-                {% endif %}
+            {% if lesson.duration_minutes %}
+            <div class="absolute bottom-4 left-4 bg-black/75 text-white text-xs px-2 py-1 rounded-none">
+              {{ lesson.duration_minutes }} dakika
             </div>
             {% endif %}
-        </section>
-        {% else %}
-        <div class="text-center card p-8">
-            <i class="fas fa-book text-gray-400 text-5xl mb-4"></i>
-            <p class="text-lg text-gray-500">
-                Hakuna masomo yaliyo patikana
+          </div>
+
+          <div class="p-6">
+            <div class="text-xs" style="color:var(--accent-600);">
+              {{ lesson.series.season.name }} • {{ lesson.series.name }}
+            </div>
+
+            <h3 class="text-lg font-bold mb-3 text-gray-800 dark:text-white group-hover:text-green-600 transition-colors">
+              {{ lesson.title }}
+            </h3>
+
+            <p class="text-sm mb-4 text-gray-600 dark:text-gray-300">
+              {{ lesson.description|truncatewords:20 }}
             </p>
+
+            {% if lesson.bible_references %}
+            <div class="text-xs text-gray-500 mb-4">
+              <i class="fas fa-bookmark mr-1"></i>{{ lesson.bible_references }}
+            </div>
+            {% endif %}
+
+            <div class="grid grid-cols-[1fr,auto] items-center text-xs">
+              <div class="grid grid-flow-col auto-cols-max gap-4">
+                <span class="grid grid-flow-col auto-cols-max items-center gap-1">
+                  <i class="fas fa-eye"></i><span>{{ lesson.views }}</span>
+                </span>
+                <span class="grid grid-flow-col auto-cols-max items-center gap-1">
+                  <i class="fas fa-calendar"></i><span>{{ lesson.created_at|date:"d M Y" }}</span>
+                </span>
+              </div>
+              <div class="grid grid-flow-col auto-cols-max items-center gap-2 justify-self-end text-green-600 group-hover:text-green-700">
+                <span class="text-sm font-medium">Soma</span>
+                <i class="fas fa-arrow-right"></i>
+              </div>
+            </div>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+
+      <!-- Pagination (GRID) -->
+      {% if lessons_page.has_other_pages %}
+      <div class="mt-12 grid place-items-center">
+        <div class="grid grid-flow-col auto-cols-max gap-2">
+          {% if lessons_page.has_previous %}
+          <a href="?page={{ lessons_page.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if season_filter != 'all' %}&season={{ season_filter }}{% endif %}"
+             class="px-4 py-2 rounded-none font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 border-2 border-gray-300">
+            <i class="fas fa-chevron-left"></i>
+          </a>
+          {% endif %}
+
+          {% for num in lessons_page.paginator.page_range %}
+            {% if lessons_page.number == num %}
+              <span class="px-4 py-2 rounded-none font-medium bg-green-600 text-white border-2 border-green-700">{{ num }}</span>
+            {% elif num > lessons_page.number|add:'-3' and num < lessons_page.number|add:'3' %}
+              <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if season_filter != 'all' %}&season={{ season_filter }}{% endif %}"
+                 class="px-4 py-2 rounded-none font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 border-2 border-gray-300">
+                {{ num }}
+              </a>
+            {% endif %}
+          {% endfor %}
+
+          {% if lessons_page.has_next %}
+          <a href="?page={{ lessons_page.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if season_filter != 'all' %}&season={{ season_filter }}{% endif %}"
+             class="px-4 py-2 rounded-none font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 border-2 border-gray-300">
+            <i class="fas fa-chevron-right"></i>
+          </a>
+          {% endif %}
         </div>
-        {% endif %}
-    </div>
+      </div>
+      {% endif %}
+    </section>
+    {% else %}
+      <div class="text-center card p-8">
+        <i class="fas fa-book text-gray-400 text-5xl mb-4"></i>
+        <p class="text-lg text-gray-500">Hakuna masomo yaliyo patikana</p>
+      </div>
+    {% endif %}
+  </div>
 </div>
 {% endblock %}

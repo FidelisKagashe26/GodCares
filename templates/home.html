@@ -4,196 +4,219 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="relative bg-gradient-to-r from-green-600 to-blue-600 text-white py-20">
-    <div class="absolute inset-0 bg-black opacity-20"></div>
-    <div class="relative container mx-auto px-6 text-center">
-        <h1 class="text-4xl md:text-6xl font-bold mb-6">
-            Karibu GOD CARES 365
-        </h1>
-        <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
-            Tovuti ya kiroho yenye masomo ya Biblia, maombi, na rasilimali za imani
-        </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="{% url 'bible_studies' %}" class="bg-white text-green-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors inline-flex items-center justify-center">
-                <i class="fas fa-book mr-2"></i>
-                Anza Kusoma
-            </a>
-            <a href="{% url 'prayer_requests' %}" class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-green-600 transition-colors inline-flex items-center justify-center">
-                <i class="fas fa-heart mr-2"></i>
-                Omba Nasi
-            </a>
-        </div>
+<section class="relative bg-gradient-to-r from-green-600 to-blue-600 text-white py-10">
+  <div class="absolute inset-0 bg-black opacity-20"></div>
+  <div class="relative container mx-auto px-6 text-center">
+    <h1 class="text-4xl md:text-6xl font-bold mb-6">
+      Karibu GOD CARES 365
+    </h1>
+    <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
+      Tovuti ya kiroho yenye masomo ya Biblia, maombi, na rasilimali za imani
+    </p>
+
+    <!-- buttons: GRID -->
+    <div class="grid gap-4 sm:auto-cols-max sm:grid-flow-col justify-center justify-items-center">
+      <a href="{% url 'bible_studies' %}"
+         class="bg-white text-green-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors inline-grid grid-flow-col auto-cols-max items-center justify-center gap-2">
+        <i class="fas fa-book"></i>
+        <span>Anza Kusoma</span>
+      </a>
+      <a href="{% url 'prayer_requests' %}"
+         class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-green-600 transition-colors inline-grid grid-flow-col auto-cols-max items-center justify-center gap-2">
+        <i class="fas fa-heart"></i>
+        <span>Omba Nasi</span>
+      </a>
     </div>
+  </div>
 </section>
 
 <!-- Features Section -->
-<section class="py-16">
-    <div class="container mx-auto px-6">
-        <h2 class="text-3xl font-bold text-center mb-12 text-gray-800 dark:text-white">
-            Chagua Kituo
-        </h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Bible Studies -->
-            <a href="{% url 'bible_studies' %}" class="card p-6 text-center group hover:scale-105 transition-transform">
-                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-green-200 transition-colors">
-                    <i class="fas fa-book text-green-600 text-2xl"></i>
-                </div>
-                <h3 class="text-xl font-semibold mb-2 text-gray-800 dark:text-white">Masomo ya Biblia</h3>
-                <p class="text-gray-600 dark:text-gray-300 mb-4">
-                    Pata masomo ya kina ya Biblia yaliyopangwa kwa misimu na mfululizo
-                </p>
-                <div class="flex items-center justify-center text-green-600 group-hover:text-green-700">
-                    <span class="mr-2">Jifunze Zaidi</span>
-                    <i class="fas fa-arrow-right"></i>
-                </div>
-            </a>
+<section class="py-8">
+  <div class="container mx-auto">
+    <h2 class="text-3xl font-bold text-center mb-12 text-gray-800 dark:text-white">
+      Chagua Kituo
+    </h2>
 
-            <!-- Prayer Requests -->
-            <a href="{% url 'prayer_requests' %}" class="card p-6 text-center group hover:scale-105 transition-transform">
-                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-red-200 transition-colors">
-                    <i class="fas fa-heart text-red-600 text-2xl"></i>
-                </div>
-                <h3 class="text-xl font-semibold mb-2 text-gray-800 dark:text-white">Maombi</h3>
-                <p class="text-gray-600 dark:text-gray-300 mb-4">
-                    Tuma maombi yako na tuombe pamoja kama jamii ya imani
-                </p>
-                <div class="flex items-center justify-center text-red-600 group-hover:text-red-700">
-                    <span class="mr-2">Omba Nasi</span>
-                    <i class="fas fa-arrow-right"></i>
-                </div>
-            </a>
-
-            <!-- News -->
-            <a href="{% url 'news' %}" class="card p-6 text-center group hover:scale-105 transition-transform">
-                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-200 transition-colors">
-                    <i class="fas fa-newspaper text-blue-600 text-2xl"></i>
-                </div>
-                <h3 class="text-xl font-semibold mb-2 text-gray-800 dark:text-white">Habari & Vipengele</h3>
-                <p class="text-gray-600 dark:text-gray-300 mb-4">
-                    Soma makala za kiroho na habari za jamii yetu
-                </p>
-                <div class="flex items-center justify-center text-blue-600 group-hover:text-blue-700">
-                    <span class="mr-2">Soma Habari</span>
-                    <i class="fas fa-arrow-right"></i>
-                </div>
-            </a>
-
-            <!-- Events -->
-            <a href="{% url 'events' %}" class="card p-6 text-center group hover:scale-105 transition-transform">
-                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-purple-200 transition-colors">
-                    <i class="fas fa-calendar text-purple-600 text-2xl"></i>
-                </div>
-                <h3 class="text-xl font-semibold mb-2 text-gray-800 dark:text-white">Matukio Maalum</h3>
-                <p class="text-gray-600 dark:text-gray-300 mb-4">
-                    Angalia matukio yetu ya siku zijazo na jiunge nasi
-                </p>
-                <div class="flex items-center justify-center text-purple-600 group-hover:text-purple-700">
-                    <span class="mr-2">Angalia Matukio</span>
-                    <i class="fas fa-arrow-right"></i>
-                </div>
-            </a>
-
-            <!-- Donations -->
-            <a href="{% url 'donations' %}" class="card p-6 text-center group hover:scale-105 transition-transform">
-                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-green-200 transition-colors">
-                    <i class="fas fa-donate text-green-600 text-2xl"></i>
-                </div>
-                <h3 class="text-xl font-semibold mb-2 text-gray-800 dark:text-white">Michango</h3>
-                <p class="text-gray-600 dark:text-gray-300 mb-4">
-                    Changia katika kazi ya Mungu na usaidie jamii yetu
-                </p>
-                <div class="flex items-center justify-center text-green-600 group-hover:text-green-700">
-                    <span class="mr-2">Changia Sasa</span>
-                    <i class="fas fa-arrow-right"></i>
-                </div>
-            </a>
-
-            <!-- About -->
-            <a href="{% url 'about' %}" class="card p-6 text-center group hover:scale-105 transition-transform">
-                <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-yellow-200 transition-colors">
-                    <i class="fas fa-info-circle text-yellow-600 text-2xl"></i>
-                </div>
-                <h3 class="text-xl font-semibold mb-2 text-gray-800 dark:text-white">Kuhusu Sisi</h3>
-                <p class="text-gray-600 dark:text-gray-300 mb-4">
-                    Jifunze zaidi kuhusu historia, dhamira, na timu ya GOD CARES 365
-                </p>
-                <div class="flex items-center justify-center text-yellow-600 group-hover:text-yellow-700">
-                    <span class="mr-2">Jifunze Zaidi</span>
-                    <i class="fas fa-arrow-right"></i>
-                </div>
-            </a>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <!-- Bible Studies -->
+      <a href="{% url 'bible_studies' %}" class="card p-3 text-center group hover:scale-105 transition-transform">
+        <div class="w-16 h-16 bg-green-100 rounded-full grid place-items-center mx-auto mb-4 group-hover:bg-green-200 transition-colors">
+          <i class="fas fa-book text-green-600 text-2xl"></i>
         </div>
+        <h3 class="text-xl font-semibold mb-2 text-gray-800 dark:text-white">Masomo ya Biblia</h3>
+        <p class="text-gray-600 dark:text-gray-300 mb-4">
+          Pata masomo ya kina ya Biblia yaliyopangwa kwa misimu na mfululizo
+        </p>
+        <div class="grid grid-flow-col auto-cols-max gap-2 justify-center text-green-600 group-hover:text-green-700">
+          <span>Jifunze Zaidi</span>
+          <i class="fas fa-arrow-right"></i>
+        </div>
+      </a>
+
+      <!-- Prayer Requests -->
+      <a href="{% url 'prayer_requests' %}" class="card p-6 text-center group hover:scale-105 transition-transform">
+        <div class="w-16 h-16 bg-green-100 rounded-full grid place-items-center mx-auto mb-4 group-hover:bg-green-200 transition-colors">
+          <i class="fas fa-heart text-green-600 text-2xl"></i>
+        </div>
+        <h3 class="text-xl font-semibold mb-2 text-gray-800 dark:text-white">Maombi</h3>
+        <p class="text-gray-600 dark:text-gray-300 mb-4">
+          Tuma maombi yako na tuombe pamoja kama jamii ya imani
+        </p>
+        <div class="grid grid-flow-col auto-cols-max gap-2 justify-center text-green-600 group-hover:text-red-700">
+          <span>Omba Nasi</span>
+          <i class="fas fa-arrow-right"></i>
+        </div>
+      </a>
+
+      <!-- News -->
+      <a href="{% url 'news' %}" class="card p-6 text-center group hover:scale-105 transition-transform">
+        <div class="w-16 h-16 bg-green-100 rounded-full grid place-items-center mx-auto mb-4 group-hover:bg-green-200 transition-colors">
+          <i class="fas fa-newspaper text-green-600 text-2xl"></i>
+        </div>
+        <h3 class="text-xl font-semibold mb-2 text-gray-800 dark:text-white">Habari & Vipengele</h3>
+        <p class="text-gray-600 dark:text-gray-300 mb-4">
+          Soma makala za kiroho na habari za jamii yetu
+        </p>
+        <div class="grid grid-flow-col auto-cols-max gap-2 justify-center text-green-600 group-hover:text-green-700">
+          <span>Soma Habari</span>
+          <i class="fas fa-arrow-right"></i>
+        </div>
+      </a>
+
+      <!-- Events -->
+      <a href="{% url 'events' %}" class="card p-6 text-center group hover:scale-105 transition-transform">
+        <div class="w-16 h-16 bg-green-100 rounded-full grid place-items-center mx-auto mb-4 group-hover:bg-green-200 transition-colors">
+          <i class="fas fa-calendar text-green-600 text-2xl"></i>
+        </div>
+        <h3 class="text-xl font-semibold mb-2 text-gray-800 dark:text-white">Matukio Maalum</h3>
+        <p class="text-gray-600 dark:text-gray-300 mb-4">
+          Angalia matukio yetu ya siku zijazo na jiunge nasi
+        </p>
+        <div class="grid grid-flow-col auto-cols-max gap-2 justify-center text-green-600 group-hover:text-green-700">
+          <span>Angalia Matukio</span>
+          <i class="fas fa-arrow-right"></i>
+        </div>
+      </a>
+
+      <!-- Donations -->
+      <a href="{% url 'donations' %}" class="card p-6 text-center group hover:scale-105 transition-transform">
+        <div class="w-16 h-16 bg-green-100 rounded-full grid place-items-center mx-auto mb-4 group-hover:bg-green-200 transition-colors">
+          <i class="fas fa-donate text-green-600 text-2xl"></i>
+        </div>
+        <h3 class="text-xl font-semibold mb-2 text-gray-800 dark:text-white">Michango</h3>
+        <p class="text-gray-600 dark:text-gray-300 mb-4">
+          Changia katika kazi ya Mungu na usaidie jamii yetu
+        </p>
+        <div class="grid grid-flow-col auto-cols-max gap-2 justify-center text-green-600 group-hover:text-green-700">
+          <span>Changia Sasa</span>
+          <i class="fas fa-arrow-right"></i>
+        </div>
+      </a>
+
+      <!-- About -->
+      <a href="{% url 'about' %}" class="card p-6 text-center group hover:scale-105 transition-transform">
+        <div class="w-16 h-16 bg-green-100 rounded-full grid place-items-center mx-auto mb-4 group-hover:bg-green-200 transition-colors">
+          <i class="fas fa-info-circle text-green-600 text-2xl"></i>
+        </div>
+        <h3 class="text-xl font-semibold mb-2 text-gray-800 dark:text-white">Kuhusu Sisi</h3>
+        <p class="text-gray-600 dark:text-gray-300 mb-4">
+          Jifunze zaidi kuhusu historia, dhamira, na timu ya GOD CARES 365
+        </p>
+        <div class="grid grid-flow-col auto-cols-max gap-2 justify-center text-green-600 group-hover:text-green-700">
+          <span>Jifunze Zaidi</span>
+          <i class="fas fa-arrow-right"></i>
+        </div>
+      </a>
     </div>
+  </div>
 </section>
 
 <!-- Quote Section -->
-<section class="py-16 bg-gradient-to-r from-green-600 to-blue-600 text-white">
-    <div class="container mx-auto px-6 text-center">
-        <blockquote class="text-2xl md:text-3xl font-bold mb-4 max-w-4xl mx-auto leading-relaxed">
-            "Hili ndilo pendo, si kwamba sisi tulimpenda Mungu, bali kwamba yeye alitupenda sisi, akamtuma Mwanawe kuwa kipatanisho kwa dhambi zetu"
-        </blockquote>
-        <cite class="text-xl font-medium">– 1 Yohana 4:10</cite>
-    </div>
+<section class="py-8 bg-gradient-to-r from-green-600 to-blue-600 text-white">
+  <div class="container mx-auto px-6 text-center">
+    <blockquote class="text-2xl md:text-3xl font-bold mb-4 max-w-4xl mx-auto leading-relaxed">
+      "Hili ndilo pendo, si kwamba sisi tulimpenda Mungu, bali kwamba yeye alitupenda sisi, akamtuma Mwanawe kuwa kipatanisho kwa dhambi zetu"
+    </blockquote>
+    <cite class="text-xl font-medium">– 1 Yohana 4:10</cite>
+  </div>
 </section>
 
 <!-- Featured Content -->
 {% if featured_posts or upcoming_events %}
-<section class="py-16 bg-gray-100 dark:bg-gray-800">
-    <div class="container mx-auto px-6">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <!-- Featured Posts -->
-            {% if featured_posts %}
-            <div>
-                <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
-                    <i class="fas fa-star text-yellow-500 mr-2"></i>
-                    Habari Maalum
-                </h2>
-                <div class="space-y-4">
-                    {% for post in featured_posts %}
-                    <a href="{% url 'news_detail' post.slug %}" class="card p-4 flex items-center space-x-4 hover:scale-105 transition-transform">
-                        {% if post.featured_image %}
-                        <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" class="w-16 h-16 object-cover rounded-lg">
-                        {% else %}
-                        <div class="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-newspaper text-gray-400"></i>
-                        </div>
-                        {% endif %}
-                        <div class="flex-1">
-                            <h3 class="font-semibold text-gray-800 dark:text-white">{{ post.title }}</h3>
-                            <p class="text-sm text-gray-600 dark:text-gray-300">{{ post.excerpt|truncatewords:15 }}</p>
-                        </div>
-                    </a>
-                    {% endfor %}
-                </div>
-            </div>
+<section class="py-8 bg-gray-100 dark:bg-gray-800">
+  <div class="container mx-auto px-3">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <!-- Featured Posts -->
+      {% if featured_posts %}
+      <div>
+        <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
+          Habari Maalum
+        </h2>
+        <div class="space-y-4">
+          {% for post in featured_posts %}
+          <a href="{% url 'news_detail' post.slug %}"
+             class="card p-4 grid grid-cols-[auto,1fr] items-center gap-4 hover:scale-105 transition-transform">
+            {% if post.featured_image %}
+              <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" class="w-16 h-16 object-cover rounded-lg">
+            {% else %}
+              <div class="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-lg grid place-items-center">
+                <i class="fas fa-newspaper text-gray-400"></i>
+              </div>
             {% endif %}
+            <div class="min-w-0">
+              <h3 class="font-semibold text-gray-800 dark:text-white">{{ post.title }}</h3>
+              <p class="text-sm text-gray-600 dark:text-gray-300">{{ post.excerpt|truncatewords:15 }}</p>
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
 
-            <!-- Upcoming Events -->
-            {% if upcoming_events %}
-            <div>
-                <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
-                    <i class="fas fa-calendar text-purple-500 mr-2"></i>
-                    Matukio ya Karibu
-                </h2>
-                <div class="space-y-4">
-                    {% for event in upcoming_events %}
-                    <a href="{% url 'event_detail' event.slug %}" class="card p-4 hover:scale-105 transition-transform">
-                        <h3 class="font-semibold text-gray-800 dark:text-white mb-2">{{ event.title }}</h3>
-                        <div class="flex items-center text-sm text-gray-600 dark:text-gray-300 mb-2">
-                            <i class="fas fa-calendar mr-2"></i>
-                            <span>{{ event.date|date:"d M Y" }}</span>
-                        </div>
-                        <div class="flex items-center text-sm text-gray-600 dark:text-gray-300">
-                            <i class="fas fa-map-marker-alt mr-2"></i>
-                            <span>{{ event.location }}</span>
-                        </div>
-                    </a>
-                    {% endfor %}
-                </div>
+    <!-- Upcoming Events -->
+    {% if upcoming_events %}
+    <div>
+    <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
+        <i class="fas fa-calendar text-blue-500 mr-2"></i>
+        Matukio ya Karibu
+    </h2>
+
+    <!-- TIMELINE: mstari wa kushoto + nukta -->
+    <div class="border-l-2 border-gray-200 dark:border-gray-700 pl-4">
+        <div class="grid gap-4">
+        {% for event in upcoming_events %}
+        <a href="{% url 'event_detail' event.slug %}"
+            class="relative grid gap-2 p-3 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+
+            <!-- nukta kwenye timeline -->
+            <span class="absolute -left-[9px] top-5 w-3 h-3 rounded-full bg-blue-500
+                        ring-4 ring-blue-100 dark:ring-blue-900/40"></span>
+
+            <!-- kichwa -->
+            <h3 class="font-semibold text-gray-800 dark:text-white leading-snug">
+            {{ event.title }}
+            </h3>
+
+            <!-- tarehe -->
+            <div class="grid grid-flow-col auto-cols-max items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+            <i class="fas fa-calendar"></i>
+            <span>{{ event.date|date:"d M Y" }}</span>
             </div>
-            {% endif %}
+
+            <!-- eneo -->
+            <div class="grid grid-flow-col auto-cols-max items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+            <i class="fas fa-map-marker-alt"></i>
+            <span class="truncate">{{ event.location }}</span>
+            </div>
+        </a>
+        {% endfor %}
         </div>
     </div>
+    </div>
+    {% endif %}
+
+    </div>
+  </div>
 </section>
 {% endif %}
 {% endblock %}

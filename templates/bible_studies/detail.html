@@ -7,7 +7,8 @@
   .page-lesson .tab-button{ @apply border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300; }
   .page-lesson .tab-button.active{ @apply border-green-500 text-green-600; }
 
-  /* Hakikisha yaliyomo hayavuki upana */
+  /* Yaliyomo yasivuke: picha/ jedwali/ iframes */
+  .page-lesson .prose{ @apply break-words; } /* vigawanyiko vya neno virefusana */
   .page-lesson .prose img{ max-width:100%; height:auto; border-radius:0.5rem; }
   .page-lesson .prose table{ display:block; overflow:auto; }
   .page-lesson .prose iframe{ max-width:100%; }
@@ -18,60 +19,92 @@
   .page-lesson .media-abs iframe,
   .page-lesson .media-abs video{ width:100% !important; height:100% !important; border:0; display:block; }
 
-  /* Item ya somo lililo "active" upande wa kulia */
+  /* Kipengele cha somo kilicho "active" upande wa kulia */
   .page-lesson .active-item{ @apply bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800; }
+
+  /* Clamps kwa vichwa virefu */
+  .clamp-1{ display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden; }
+  .clamp-2{ display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+
+  /* Mobile typography compact (≤640px) */
+  @media (max-width:640px){
+    .page-lesson h1{ font-size:1.375rem !important; line-height:1.25 !important; } /* ~22px */
+    .page-lesson .tab-button{ font-size:.85rem !important; }
+  }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="page-lesson py-12">
-  <div class="container mx-auto px-6">
-    <!-- Breadcrumb -->
-    <nav class="mb-8">
-      <ol class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
-        <li><a href="{% url 'home' %}" class="hover:text-green-600">Nyumbani</a></li>
-        <li><i class="fas fa-chevron-right"></i></li>
-        <li><a href="{% url 'bible_studies' %}" class="hover:text-green-600">Mafunzo</a></li>
-        <li><i class="fas fa-chevron-right"></i></li>
-        <li><a href="{% url 'bible_studies' %}?season={{ lesson.series.season.slug }}" class="hover:text-green-600">{{ lesson.series.season.name }}</a></li>
-        <li><i class="fas fa-chevron-right"></i></li>
-        <li class="text-gray-800 dark:text-white">{{ lesson.title|truncatewords:5 }}</li>
+<div class="page-lesson py-6">
+  <div class="container mx-auto px-3">
+
+    <!-- Breadcrumb (GRID + truncate kila kipande) -->
+    <nav class="mb-8 overflow-hidden">
+      <ol class="grid grid-flow-col auto-cols-max items-center gap-2 text-sm text-gray-600 dark:text-gray-400 min-w-0">
+        <li class="shrink-0"><a href="{% url 'home' %}" class="hover:text-green-600">Nyumbani</a></li>
+        <li class="shrink-0 opacity-60">/</li>
+
+        <!-- ficha “Mafunzo” kwenye simu kuokoa nafasi -->
+        <li class="shrink-0 hidden sm:block"><a href="{% url 'bible_studies' %}" class="hover:text-green-600">Mafunzo</a></li>
+        <li class="shrink-0 opacity-60 hidden sm:block">/</li>
+
+        <li class="min-w-0">
+          <a href="{% url 'bible_studies' %}?season={{ lesson.series.season.slug }}"
+             class="block truncate whitespace-nowrap hover:text-green-600 max-w-[38vw] sm:max-w-[18rem]">
+            {{ lesson.series.season.name }}
+          </a>
+        </li>
+        <li class="shrink-0 opacity-60">/</li>
+        <li class="min-w-0 text-gray-800 dark:text-white">
+          <span class="block truncate whitespace-nowrap max-w-[54vw] sm:max-w-[28rem]">
+            {{ lesson.title }}
+          </span>
+        </li>
       </ol>
     </nav>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <!-- Main Content -->
-      <div class="lg:col-span-2">
-        <article class="card p-8">
+      <div class="lg:col-span-2 min-w-0">
+        <article class="card p-4">
           <!-- Header -->
           <header class="mb-6">
-            <div class="flex items-center space-x-2 mb-4">
-              <span class="bg-green-100 text-green-800 text-xs px-3 py-1 rounded-full">
+            <div class="grid grid-flow-col auto-cols-max items-center gap-2 mb-4 min-w-0">
+              <span class="bg-green-100 text-green-800 text-xs px-3 py-1 rounded-full clamp-1">
                 {{ lesson.series.season.name }}
               </span>
-              <span class="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full">
+              <span class="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full clamp-1">
                 {{ lesson.series.name }}
               </span>
             </div>
 
-            <h1 class="text-3xl font-bold mb-4 text-gray-800 dark:text-white">{{ lesson.title }}</h1>
+            <h1 class="text-2xl sm:text-3xl font-bold mb-3 text-gray-800 dark:text-white leading-tight clamp-2">
+              {{ lesson.title }}
+            </h1>
 
-            <div class="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 mb-6">
-              <div class="flex items-center space-x-4">
+            <!-- meta: ivunjike vizuri kwenye simu -->
+            <div class="grid gap-2 sm:grid-cols-[1fr,auto] items-start text-sm text-gray-600 dark:text-gray-400 mb-6 min-w-0">
+              <div class="grid grid-cols-1 sm:grid-flow-col sm:auto-cols-max gap-2 sm:gap-4 min-w-0">
                 {% if lesson.duration_minutes %}
-                <span class="flex items-center"><i class="fas fa-clock mr-2"></i>{{ lesson.duration_minutes }} dakika</span>
+                <span class="grid grid-flow-col auto-cols-max items-center gap-2 truncate">
+                  <i class="fas fa-clock"></i><span class="truncate">{{ lesson.duration_minutes }} dakika</span>
+                </span>
                 {% endif %}
-                <span class="flex items-center"><i class="fas fa-eye mr-2"></i>{{ lesson.views }} mara</span>
-                <span class="flex items-center"><i class="fas fa-calendar mr-2"></i>{{ lesson.created_at|date:"d M Y" }}</span>
+                <span class="grid grid-flow-col auto-cols-max items-center gap-2 truncate">
+                  <i class="fas fa-eye"></i><span class="truncate">{{ lesson.views }} mara</span>
+                </span>
+                <span class="grid grid-flow-col auto-cols-max items-center gap-2 truncate">
+                  <i class="fas fa-calendar"></i><span class="truncate">{{ lesson.created_at|date:"d M Y" }}</span>
+                </span>
               </div>
             </div>
 
             {% if lesson.bible_references %}
             <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 mb-6">
-              <div class="flex items-center">
-                <i class="fas fa-bookmark text-green-600 mr-2"></i>
-                <span class="font-medium text-green-700 dark:text-green-300">Maandiko ya Biblia:</span>
-                <span class="ml-2 text-green-600 dark:text-green-400">{{ lesson.bible_references }}</span>
+              <div class="grid grid-flow-col auto-cols-max items-center gap-2 min-w-0">
+                <i class="fas fa-bookmark text-green-600 shrink-0"></i>
+                <span class="font-medium text-green-700 dark:text-green-300 shrink-0">Maandiko ya Biblia:</span>
+                <span class="text-green-600 dark:text-green-400 truncate">{{ lesson.bible_references }}</span>
               </div>
             </div>
             {% endif %}
@@ -80,7 +113,8 @@
           <!-- Tabs -->
           <div class="mb-6">
             <div class="border-b border-gray-200 dark:border-gray-700">
-              <nav class="-mb-px flex space-x-8">
+              <!-- kwenye simu: safu mbili; kuanzia sm: mstari mmoja wa kutiririka -->
+              <nav class="-mb-px grid grid-cols-2 sm:grid-flow-col sm:auto-cols-max gap-3 sm:gap-8">
                 {% if lesson.content %}
                 <button onclick="showTab('text')" id="text-tab" class="tab-button active py-2 px-1 border-b-2 font-medium text-sm">
                   <i class="fas fa-align-left mr-2"></i>Maandishi
@@ -117,17 +151,9 @@
           {% if lesson.video_url or lesson.video_embed_code %}
           <div id="video-content" class="tab-content hidden">
             {% if lesson.video_embed_code %}
-              <div class="media-16x9">
-                <div class="media-abs">
-                  {{ lesson.video_embed_code|safe }}
-                </div>
-              </div>
+              <div class="media-16x9"><div class="media-abs">{{ lesson.video_embed_code|safe }}</div></div>
             {% elif lesson.video_url %}
-              <div class="media-16x9">
-                <div class="media-abs">
-                  <iframe src="{{ lesson.video_url }}" allowfullscreen></iframe>
-                </div>
-              </div>
+              <div class="media-16x9"><div class="media-abs"><iframe src="{{ lesson.video_url }}" allowfullscreen></iframe></div></div>
             {% endif %}
           </div>
           {% endif %}
@@ -138,8 +164,8 @@
               <i class="fas fa-file-pdf text-red-500 text-6xl mb-4"></i>
               <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Pakua PDF</h3>
               <a href="{{ lesson.pdf_file.url }}" download
-                 class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors inline-flex items-center">
-                <i class="fas fa-download mr-2"></i> Pakua Faili
+                 class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors inline-grid grid-flow-col auto-cols-max items-center gap-2">
+                <i class="fas fa-download"></i><span>Pakua Faili</span>
               </a>
             </div>
           </div>
@@ -159,42 +185,42 @@
       </div>
 
       <!-- Sidebar -->
-      <div class="space-y-6">
-        <!-- Series Navigation: onyesha somo la sasa + mengine -->
+      <div class="space-y-6 min-w-0">
+        <!-- Series Navigation -->
         <div class="card p-6">
-          <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-white">{{ lesson.series.name }}</h3>
+          <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-white clamp-1">{{ lesson.series.name }}</h3>
 
           <!-- Current lesson (active) -->
-          <div class="block p-3 rounded-lg active-item mb-3">
-            <div class="flex items-center space-x-3">
-              <span class="w-8 h-8 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-bold">
+          <div class="p-3 rounded-lg active-item mb-3">
+            <div class="grid grid-cols-[2rem,1fr,auto] items-center gap-3 min-w-0">
+              <span class="w-8 h-8 bg-green-100 text-green-600 rounded-full grid place-items-center text-sm font-bold">
                 {{ lesson.order|default:"•" }}
               </span>
-              <div class="flex-1">
-                <h4 class="font-medium text-sm text-gray-800 dark:text-white">{{ lesson.title }}</h4>
+              <div class="min-w-0">
+                <h4 class="font-medium text-sm text-gray-800 dark:text-white truncate">{{ lesson.title }}</h4>
                 {% if lesson.duration_minutes %}
-                <p class="text-xs text-gray-500">{{ lesson.duration_minutes }} dakika</p>
+                <p class="text-xs text-gray-500 truncate">{{ lesson.duration_minutes }} dakika</p>
                 {% endif %}
               </div>
-              <i class="fas fa-play text-green-600"></i>
+              <i class="fas fa-play text-green-600 justify-self-end"></i>
             </div>
           </div>
 
           {% if related_lessons %}
-          <div class="space-y-3">
+          <div class="grid gap-3">
             {% for related_lesson in related_lessons %}
             <a href="{% url 'lesson_detail' related_lesson.slug %}"
-               class="block p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-              <div class="flex items-center space-x-3">
-                <span class="w-8 h-8 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-bold">
+               class="p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+              <div class="grid grid-cols-[2rem,1fr] items-center gap-3 min-w-0">
+                <span class="w-8 h-8 bg-green-100 text-green-600 rounded-full grid place-items-center text-sm font-bold">
                   {{ related_lesson.order|default:forloop.counter }}
                 </span>
-                <div class="flex-1">
-                  <h4 class="font-medium text-sm text-gray-800 dark:text-white">
-                    {{ related_lesson.title|truncatewords:6 }}
+                <div class="min-w-0">
+                  <h4 class="font-medium text-sm text-gray-800 dark:text-white truncate">
+                    {{ related_lesson.title|truncatewords:8 }}
                   </h4>
                   {% if related_lesson.duration_minutes %}
-                  <p class="text-xs text-gray-500">{{ related_lesson.duration_minutes }} dakika</p>
+                  <p class="text-xs text-gray-500 truncate">{{ related_lesson.duration_minutes }} dakika</p>
                   {% endif %}
                 </div>
               </div>
@@ -205,44 +231,45 @@
         </div>
 
         <!-- Quick Actions -->
-        <div class="card p-6">
+        <div class="card p-4">
           <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Vitendo vya Haraka</h3>
-          <div class="space-y-3">
+          <div class="grid gap-3">
             <a href="{% url 'prayer_requests' %}"
-               class="flex items-center p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors">
-              <i class="fas fa-heart mr-3"></i><span>Omba Nasi</span>
+               class="grid grid-flow-col auto-cols-max items-center gap-3 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors">
+              <i class="fas fa-heart"></i><span class="truncate">Omba Nasi</span>
             </a>
             <a href="{% url 'donations' %}"
-               class="flex items-center p-3 rounded-lg bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors">
-              <i class="fas fa-donate mr-3"></i><span>Changia</span>
+               class="grid grid-flow-col auto-cols-max items-center gap-3 p-3 rounded-lg bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors">
+              <i class="fas fa-donate"></i><span class="truncate">Changia</span>
             </a>
             <a href="{% url 'bible_studies' %}"
-               class="flex items-center p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
-              <i class="fas fa-book mr-3"></i><span>Masomo Mengine</span>
+               class="grid grid-flow-col auto-cols-max items-center gap-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
+              <i class="fas fa-book"></i><span class="truncate">Masomo Mengine</span>
             </a>
           </div>
         </div>
 
         <!-- Share -->
-        <div class="card p-6">
+        <div class="card p-4">
           <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Shiriki Funzo</h3>
-          <div class="flex space-x-3">
+          <div class="grid grid-cols-3 gap-3">
             <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank"
-               class="flex-1 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg text-center transition-colors">
+               class="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg grid place-items-center transition-colors">
               <i class="fab fa-facebook"></i>
             </a>
             <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ lesson.title }}" target="_blank"
-               class="flex-1 bg-blue-400 hover:bg-blue-500 text-white p-3 rounded-lg text-center transition-colors">
+               class="bg-blue-400 hover:bg-blue-500 text-white p-3 rounded-lg grid place-items-center transition-colors">
               <i class="fab fa-twitter"></i>
             </a>
             <a href="https://wa.me/?text={{ lesson.title }} {{ request.build_absolute_uri }}" target="_blank"
-               class="flex-1 bg-green-600 hover:bg-green-700 text-white p-3 rounded-lg text-center transition-colors">
+               class="bg-green-600 hover:bg-green-700 text-white p-3 rounded-lg grid place-items-center transition-colors">
               <i class="fab fa-whatsapp"></i>
             </a>
           </div>
         </div>
       </div>
     </div>
+
   </div>
 </div>
 
