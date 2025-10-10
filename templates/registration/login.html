@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Ingia - GOD CARES 365{% endblock %}
+
+{% block content %}
+<div class="py-10">
+  <div class="container mx-auto px-3 max-w-md">
+    <div class="card p-6">
+      <h1 class="text-2xl font-bold mb-4">Ingia</h1>
+
+      {% if form.errors or form.non_field_errors %}
+        <div class="mb-4 p-3 border border-red-300 bg-red-50 text-red-700 rounded">
+          Jina la mtumiaji au nenosiri si sahihi. Tafadhali jaribu tena.
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      <form method="post" action="{% url 'login' %}" class="grid gap-4">
+        {% csrf_token %}
+        {# hakikisha 'next' inarudi kwenye ukurasa wa somo baada ya ku-login #}
+        {% if next %}
+          <input type="hidden" name="next" value="{{ next }}">
+        {% elif request.GET.next %}
+          <input type="hidden" name="next" value="{{ request.GET.next }}">
+        {% endif %}
+
+        <div>
+          <label class="block text-sm mb-1">Jina la mtumiaji</label>
+          {{ form.username|add_class:"w-full px-4 py-3 border-2 border-gray-300 rounded-none" }}
+        </div>
+
+        <div>
+          <label class="block text-sm mb-1">Nenosiri</label>
+          {{ form.password|add_class:"w-full px-4 py-3 border-2 border-gray-300 rounded-none" }}
+        </div>
+
+        <button class="px-4 py-3 font-semibold text-white rounded-none"
+                style="background:var(--accent-600);">
+          Ingia
+        </button>
+      </form>
+
+      <p class="mt-4 text-sm">
+        Huna akaunti?
+        <a href="{% url 'content:signup' %}" class="text-green-700 underline">Jisajili</a>
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

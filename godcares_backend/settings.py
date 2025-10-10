@@ -29,7 +29,7 @@ INSTALLED_APPS = [
     'django_filters',
     
     # Local apps
-    'content',
+    'content.apps.ContentConfig',
 ]
 
 MIDDLEWARE = [

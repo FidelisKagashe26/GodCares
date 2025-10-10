@@ -4,13 +4,10 @@
 
 {% block extra_css %}
 <style type="text/tailwindcss">
-  /* Inputs: square + accent focus (sawa na About/News) */
   .form-input{
     @apply w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-700 rounded-none bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100;
   }
   .form-input:focus{ outline:none; box-shadow:0 0 0 3px var(--accent-200); border-color:var(--accent-600); }
-
-  /* Media frames */
   .media-16x9{ position:relative; width:100%; padding-top:56.25%; }
   .media-16x9 > img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
 </style>
@@ -30,7 +27,7 @@
       </p>
     </header>
 
-    <!-- Search & Filter (GRID) -->
+    <!-- Search & Filter -->
     <div class="mb-8">
       <form method="get" class="grid grid-cols-1 md:grid-cols-[1fr,220px,auto] gap-4 items-stretch">
         <div class="relative">
@@ -81,7 +78,7 @@
             {% for series in season.series.all|slice:":3" %}
               {% with lessons=series.lessons.all %}
                 {% for l in lessons|slice:":1" %}
-                  <a href="{% url 'lesson_detail' l.slug %}" class="text-sm text-green-600 hover:text-green-700 hover:underline grid grid-flow-col auto-cols-max items-center gap-2">
+                  <a href="{% url 'content:lesson_detail' l.slug %}" class="text-sm text-green-600 hover:text-green-700 hover:underline grid grid-flow-col auto-cols-max items-center gap-2">
                     <i class="fas fa-play-circle"></i>{{ series.name }}
                   </a>
                 {% empty %}
@@ -112,7 +109,7 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {% for lesson in lessons_page %}
-        <a href="{% url 'lesson_detail' lesson.slug %}" class="card overflow-hidden group transition-colors hover:bg-gray-50 dark:hover:bg-gray-800">
+        <a href="{% url 'content:lesson_detail' lesson.slug %}" class="card overflow-hidden group transition-colors hover:bg-gray-50 dark:hover:bg-gray-800">
           <div class="relative">
             {% if lesson.featured_image %}
               <img src="{{ lesson.featured_image.url }}" alt="{{ lesson.title }}" class="w-full h-48 object-cover">
@@ -122,23 +119,23 @@
               </div>
             {% endif %}
 
-            <!-- Aina ya maudhui -->
+            <!-- Badges -->
             <div class="absolute top-4 right-4 grid grid-flow-col auto-cols-max gap-1">
               {% if lesson.video_url or lesson.video_embed_code %}
-              <span class="rounded-none text-white text-xs px-2 py-1" style="background:#ef4444;"><i class="fas fa-video"></i></span>
+                <span class="rounded-none text-white text-xs px-2 py-1" style="background:#ef4444;" title="Video"><i class="fas fa-video"></i></span>
               {% endif %}
               {% if lesson.pdf_file %}
-              <span class="rounded-none text-white text-xs px-2 py-1" style="background:#3b82f6;"><i class="fas fa-file-pdf"></i></span>
+                <span class="rounded-none text-white text-xs px-2 py-1" style="background:#3b82f6;" title="PDF"><i class="fas fa-file-pdf"></i></span>
               {% endif %}
               {% if lesson.audio_file %}
-              <span class="rounded-none text-white text-xs px-2 py-1" style="background:#10b981;"><i class="fas fa-headphones"></i></span>
+                <span class="rounded-none text-white text-xs px-2 py-1" style="background:#10b981;" title="Audio"><i class="fas fa-headphones"></i></span>
               {% endif %}
             </div>
 
             {% if lesson.duration_minutes %}
-            <div class="absolute bottom-4 left-4 bg-black/75 text-white text-xs px-2 py-1 rounded-none">
-              {{ lesson.duration_minutes }} dakika
-            </div>
+              <div class="absolute bottom-4 left-4 bg-black/75 text-white text-xs px-2 py-1 rounded-none">
+                {{ lesson.duration_minutes }} dakika
+              </div>
             {% endif %}
           </div>
 
@@ -163,15 +160,21 @@
 
             <div class="grid grid-cols-[1fr,auto] items-center text-xs">
               <div class="grid grid-flow-col auto-cols-max gap-4">
-                <span class="grid grid-flow-col auto-cols-max items-center gap-1">
+                <span class="grid grid-flow-col auto-cols-max items-center gap-1" title="Views">
                   <i class="fas fa-eye"></i><span>{{ lesson.views }}</span>
+                </span>
+                <span class="grid grid-flow-col auto-cols-max items-center gap-1" title="Likes">
+                  <i class="fas fa-heart"></i><span>{{ lesson.like_count }}</span>
+                </span>
+                <span class="grid grid-flow-col auto-cols-max items-center gap-1" title="Comments">
+                  <i class="fas fa-comment"></i><span>{{ lesson.comment_count }}</span>
                 </span>
                 <span class="grid grid-flow-col auto-cols-max items-center gap-1">
                   <i class="fas fa-calendar"></i><span>{{ lesson.created_at|date:"d M Y" }}</span>
                 </span>
               </div>
               <div class="grid grid-flow-col auto-cols-max items-center gap-2 justify-self-end text-green-600 group-hover:text-green-700">
-                <span class="text-sm font-medium">Soma</span>
+                <span class="text-sm font-medium">Fungua</span>
                 <i class="fas fa-arrow-right"></i>
               </div>
             </div>
@@ -180,7 +183,7 @@
         {% endfor %}
       </div>
 
-      <!-- Pagination (GRID) -->
+      <!-- Pagination -->
       {% if lessons_page.has_other_pages %}
       <div class="mt-12 grid place-items-center">
         <div class="grid grid-flow-col auto-cols-max gap-2">
