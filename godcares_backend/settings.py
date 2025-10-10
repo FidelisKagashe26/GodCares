@@ -176,3 +176,25 @@ LOGGING = {
 
 # Create logs directory
 os.makedirs(BASE_DIR / 'logs', exist_ok=True)
+
+SITE_ID = 1
+
+LOGOUT_REDIRECT_URL = 'home'
+LOGIN_REDIRECT_URL = 'home'
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'fathercares365@gmail.com'
+EMAIL_HOST_PASSWORD = 'upvl dvby lhuy cfmb' 
+DEFAULT_FROM_EMAIL = "GOD CARES 365 <fathercares365@gmail.com>"     
+SERVER_EMAIL = EMAIL_HOST_USER
+
+# Token ya password reset: nusu saa
+PASSWORD_RESET_TIMEOUT = 60 * 30
+STRICT_EMAIL_VALIDATION = True
+EMAIL_VALIDATION_TIMEOUT = 3  # sekunde za DNS lookup
+
+# (Hiari) Ruhusu reset tu kwa waliothibitisha email
+RESET_REQUIRE_VERIFIED_EMAIL = True

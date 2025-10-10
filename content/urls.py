@@ -27,6 +27,7 @@ urlpatterns = [
     # Pages
     path("signup/", views.signup_view, name="signup"),
     path("verify-email/", views.verify_email_view, name="verify_email"),
+    path("verify-email/resend/", views.resend_verification_view, name="verify_resend"),
     path("lessons/<slug:slug>/", views.lesson_detail, name="lesson_detail"),
     path("lessons/<slug:slug>/like/", views.lesson_like_toggle, name="lesson_like"),
     path("subscribe-toggle/", views.subscribe_toggle, name="subscribe_toggle"),

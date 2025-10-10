@@ -1,0 +1,9 @@
+Habari {{ user.username }},
+
+Tafadhali thibitisha barua pepe yako kwa kubofya kiungo hapa chini:
+{{ verify_url }}
+
+Kiungo hiki kitaisha ndani ya dakika 30.
+
+Asante,
+{{ site_name }}

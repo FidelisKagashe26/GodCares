@@ -1,6 +1,17 @@
 {% extends "base.html" %}
-
 {% block title %}Ingia - GOD CARES 365{% endblock %}
+
+{% block extra_css %}
+<style type="text/tailwindcss">
+  .auth-form input[type="text"],
+  .auth-form input[type="password"]{
+    @apply w-full px-4 py-3 border-2 border-gray-300 rounded-none bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100;
+  }
+  .auth-form input:focus{
+    outline: none; box-shadow: 0 0 0 3px var(--accent-200); border-color: var(--accent-600);
+  }
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="py-10">
@@ -10,14 +21,13 @@
 
       {% if form.errors or form.non_field_errors %}
         <div class="mb-4 p-3 border border-red-300 bg-red-50 text-red-700 rounded">
-          Jina la mtumiaji au nenosiri si sahihi. Tafadhali jaribu tena.
+          Jina la mtumiaji au nenosiri si sahihi. Jaribu tena.
           {{ form.non_field_errors }}
         </div>
       {% endif %}
 
-      <form method="post" action="{% url 'login' %}" class="grid gap-4">
+      <form method="post" action="{% url 'login' %}" class="auth-form grid gap-4">
         {% csrf_token %}
-        {# hakikisha 'next' inarudi kwenye ukurasa wa somo baada ya ku-login #}
         {% if next %}
           <input type="hidden" name="next" value="{{ next }}">
         {% elif request.GET.next %}
@@ -26,23 +36,27 @@
 
         <div>
           <label class="block text-sm mb-1">Jina la mtumiaji</label>
-          {{ form.username|add_class:"w-full px-4 py-3 border-2 border-gray-300 rounded-none" }}
+          {{ form.username }}
         </div>
 
         <div>
           <label class="block text-sm mb-1">Nenosiri</label>
-          {{ form.password|add_class:"w-full px-4 py-3 border-2 border-gray-300 rounded-none" }}
+          {{ form.password }}
         </div>
 
-        <button class="px-4 py-3 font-semibold text-white rounded-none"
-                style="background:var(--accent-600);">
+        <button class="px-4 py-3 font-semibold text-white rounded-none" style="background:var(--accent-600);">
           Ingia
         </button>
       </form>
 
       <p class="mt-4 text-sm">
         Huna akaunti?
-        <a href="{% url 'content:signup' %}" class="text-green-700 underline">Jisajili</a>
+        <a href="{% url 'content:signup' %}?next={{ request.GET.next|default:request.path|urlencode }}" class="text-green-700 underline">
+          Jisajili
+        </a>
+      </p>
+      <p class="mt-3 text-sm">
+        <a class="text-green-700 underline" href="{% url 'password_reset' %}">Umesahau nenosiri?</a>
       </p>
     </div>
   </div>

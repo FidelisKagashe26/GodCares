@@ -4,6 +4,8 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from content import views
+from content.forms import StrictPasswordResetForm
+from django.urls import reverse_lazy
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
@@ -12,6 +14,42 @@ urlpatterns = [
     # Auth basics (login/logout)
     path('login/', auth_views.LoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+
+    # Password reset flow
+    path(
+        'password-reset/',
+        auth_views.PasswordResetView.as_view(
+            template_name='registration/password_reset_form.html',
+            email_template_name='registration/password_reset_email.txt',
+            html_email_template_name='registration/password_reset_email.html',
+            subject_template_name='registration/password_reset_subject.txt',
+            success_url=reverse_lazy('password_reset_done'),
+            form_class=StrictPasswordResetForm,
+        ),
+        name='password_reset',
+    ),
+    path(
+        'password-reset/done/',
+        auth_views.PasswordResetDoneView.as_view(
+            template_name='registration/password_reset_done.html'
+        ),
+        name='password_reset_done',
+    ),
+    path(
+        'reset/<uidb64>/<token>/',
+        auth_views.PasswordResetConfirmView.as_view(
+            template_name='registration/password_reset_confirm.html',
+            success_url=reverse_lazy('password_reset_complete'),
+        ),
+        name='password_reset_confirm',
+    ),
+    path(
+        'reset/done/',
+        auth_views.PasswordResetCompleteView.as_view(
+            template_name='registration/password_reset_complete.html'
+        ),
+        name='password_reset_complete',
+    ),
 
     # Pages
     path('', views.home, name='home'),
@@ -26,7 +64,7 @@ urlpatterns = [
     path('michango/', views.donations, name='donations'),
 
     # Content app (pages + API under /api/)
-    path("", include("content.urls", namespace="content")),
+    path("", include(("content.urls", "content"), namespace="content")),
 
     # DRF browsable login (optional)
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
