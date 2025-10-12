@@ -6,7 +6,7 @@
   <title>{% block title %}GOD CARES 365 - Tovuti ya Kiroho{% endblock %}</title>
   <meta name="description" content="{% block description %}Tovuti ya kiroho yenye masomo ya Biblia, maombi, na rasilimali za imani{% endblock %}">
   <meta name="keywords" content="{% block keywords %}kiroho, biblia, maombi, imani, tanzania, masomo{% endblock %}">
-
+  {% load static %}
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -144,8 +144,8 @@
       <!-- GRID: logo | nav | actions -->
       <div class="grid grid-cols-[auto,1fr,auto] items-center h-20 gap-4">
         <!-- Logo -->
-        <a href="{% url 'home' %}" class="grid grid-flow-col auto-cols-max items-center gap-3">
-          <div class="logo-slab"><span class="text-white font-black text-sm">GC</span></div>
+        <a href="{% url 'home' %}" class="grid grid-flow-col auto-cols-max items-center">
+          <img src="{% static 'images/logo.png' %}" alt="Logo" class="h-20 w-auto">
           <span class="font-extrabold text-xl tracking-wider">
             <span class="text-yellow-500">GOD</span> <span class="text-blue-600">CARES</span> <span class="text-green-700">365</span>
           </span>
@@ -249,7 +249,7 @@
   <!-- MAIN -->
   <main class="min-h-screen">
     <div class="page-container py-5">
-      <div class="content-frame md:p-10">
+      <div class="content-frame">
         <div class="grid grid-cols-1 gap-3">
           {% block content %}{% endblock %}
         </div>
