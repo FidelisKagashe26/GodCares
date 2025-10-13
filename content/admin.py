@@ -4,9 +4,15 @@ from django.utils import timezone
 
 from .models import (
     Category, Post, Season, Series, Lesson, Event, MediaItem, PrayerRequest,
-    LessonLike, LessonComment, Announcement, Profile
+    LessonLike, LessonComment, Announcement, Profile, SiteSettings
 )
 
+@admin.register(SiteSettings)
+class SiteSettingsAdmin(admin.ModelAdmin):
+    def has_add_permission(self, request):
+        # ruhusu 1 tu
+        return not SiteSettings.objects.exists() or super().has_add_permission(request)
+    
 # ===========================
 # Inlines for Lesson
 # ===========================

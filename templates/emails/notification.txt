@@ -1,0 +1,12 @@
+{{ site_name }}
+----------------------------
+
+{{ title }}
+
+{% if body %}{{ body }}{% endif %}
+{% if url %}
+
+Soma zaidi: {{ url }}
+{% endif %}
+
+Ujumbe huu umetumwa na {{ site_name }}. Tafadhali usijibu barua pepe hii.

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Jumbe | GOD CARES 365{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="p-4 md:p-6">
+    <div class="grid grid-flow-col auto-cols-max items-center justify-between">
+      <h1 class="text-xl md:text-2xl font-extrabold">Jumbe</h1>
+      <a href="{% url 'notifications_mark_all_read' %}" class="btn-secondary">Weka zote kuwa zimesomwa</a>
+    </div>
+
+    <div class="mt-4 divide-y divide-gray-200 dark:divide-gray-800">
+      {% for n in page_obj %}
+        <a href="{% url 'notifications_open' n.pk %}" class="grid gap-1 py-3 hover:bg-gray-50 dark:hover:bg-gray-900 px-2">
+          <div class="grid grid-flow-col auto-cols-max items-center gap-2">
+            {% if not n.is_read %}
+              <span class="inline-block w-2 h-2 rounded-full bg-red-600" aria-label="haijasomwa"></span>
+            {% else %}
+              <span class="inline-block w-2 h-2 rounded-full bg-gray-400"></span>
+            {% endif %}
+            <span class="font-semibold">{{ n.title }}</span>
+          </div>
+          {% if n.body %}<div class="text-sm text-gray-600 dark:text-gray-300">{{ n.body|truncatechars:180 }}</div>{% endif %}
+          <div class="text-xs text-gray-500">{{ n.created_at|date:"M d, Y H:i" }}</div>
+        </a>
+      {% empty %}
+        <div class="py-10 text-center text-gray-500">Hakuna jumbe kwa sasa.</div>
+      {% endfor %}
+    </div>
+
+    {% if page_obj.has_other_pages %}
+    <div class="mt-4 grid grid-flow-col auto-cols-max gap-2 justify-center">
+      {% if page_obj.has_previous %}
+      <a class="btn-secondary" href="?page={{ page_obj.previous_page_number }}">Nyuma</a>
+      {% endif %}
+      <span class="px-3 py-2 border-2 border-gray-200 dark:border-gray-700">Uk {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}
+      <a class="btn-secondary" href="?page={{ page_obj.next_page_number }}">Mbele</a>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

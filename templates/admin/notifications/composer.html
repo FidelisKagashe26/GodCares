@@ -1,0 +1,39 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+{% block content %}
+  <h1>{{ title }}</h1>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    <div class="submit-row">
+      <input type="submit" value="Tuma Ujumbe" class="default">
+    </div>
+    <fieldset class="module aligned">
+      <div class="form-row">
+        {{ form.send_to_all.errors }} <label>{{ form.send_to_all.label_tag }}</label> {{ form.send_to_all }}
+        <p class="help">Ikiwa umetiki hapa, orodha ya wapokeaji hapo chini itapuuzwa.</p>
+      </div>
+      <div class="form-row">
+        {{ form.recipients.errors }} <label>{{ form.recipients.label_tag }}</label> {{ form.recipients }}
+      </div>
+      <div class="form-row">
+        {{ form.level.errors }} <label>{{ form.level.label_tag }}</label> {{ form.level }}
+      </div>
+      <div class="form-row">
+        {{ form.title.errors }} <label>{{ form.title.label_tag }}</label> {{ form.title }}
+      </div>
+      <div class="form-row">
+        {{ form.body.errors }} <label>{{ form.body.label_tag }}</label> {{ form.body }}
+      </div>
+      <div class="form-row">
+        {{ form.url.errors }} <label>{{ form.url.label_tag }}</label> {{ form.url }}
+      </div>
+      <div class="form-row">
+        {{ form.email_also.errors }} <label>{{ form.email_also.label_tag }}</label> {{ form.email_also }}
+        <p class="help">Barua pepe zitatumwa kwa watumiaji walio <b>washa</b> “pokea arifa kwa barua pepe”.</p>
+      </div>
+    </fieldset>
+    <div class="submit-row">
+      <input type="submit" value="Tuma Ujumbe" class="default">
+    </div>
+  </form>
+{% endblock %}

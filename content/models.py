@@ -415,3 +415,21 @@ class Announcement(models.Model):
 
     def __str__(self):
         return self.title
+
+class SiteSettings(models.Model):
+    site_name = models.CharField(max_length=100, default="GOD CARES 365")
+    from_email = models.EmailField(default="no-reply@example.com")
+    contact_email = models.EmailField(blank=True)
+    phone_primary = models.CharField(max_length=30, blank=True)
+    phone_secondary = models.CharField(max_length=30, blank=True)
+    facebook_url = models.URLField(blank=True)
+    twitter_url = models.URLField(blank=True)
+    instagram_url = models.URLField(blank=True)
+    footer_team = models.TextField(blank=True, help_text="Orodha/maelezo mafupi ya timu")
+
+    # weka 1 tu
+    def __str__(self):
+        return "Site Settings"
+
+    class Meta:
+        verbose_name_plural = "Site Settings"

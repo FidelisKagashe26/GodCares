@@ -7,9 +7,32 @@ from content import views
 from content.forms import StrictPasswordResetForm
 from django.urls import reverse_lazy
 from django.contrib.auth import views as auth_views
+from core import views as core_views
+from core.forms import CustomPasswordChangeForm 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    path('tafuta/', core_views.site_search, name='site_search'),
+
+    path('account/profile/', core_views.account_profile, name='account_profile'),
+
+    path(
+        'account/password/change/',
+        auth_views.PasswordChangeView.as_view(
+            form_class=CustomPasswordChangeForm,                     # <— TUMIA FORM YETU
+            template_name='registration/password_change_form.html',
+            success_url=reverse_lazy('password_change_done'),
+        ),
+        name='password_change'
+    ),
+    path(
+        'account/password/change/done/',
+        auth_views.PasswordChangeDoneView.as_view(
+            template_name='registration/password_change_done.html'
+        ),
+        name='password_change_done'
+    ),
 
     # Auth basics (login/logout)
     path('login/', auth_views.LoginView.as_view(), name='login'),
@@ -65,6 +88,7 @@ urlpatterns = [
 
     # Content app (pages + API under /api/)
     path("", include(("content.urls", "content"), namespace="content")),
+    path("", include("notifications.urls")),
 
     # DRF browsable login (optional)
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),

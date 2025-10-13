@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'notifications.apps.NotificationsConfig',
     
     # Third party apps
     'rest_framework',
@@ -57,6 +58,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'notifications.context_processors.unread_notifications',
+                'content.context_processors.site_settings',
+                'notifications.context_processors.notif_counts',
             ],
         },
     },
@@ -192,7 +196,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'fathercares365@gmail.com'
 EMAIL_HOST_PASSWORD = 'upvl dvby lhuy cfmb' 
-DEFAULT_FROM_EMAIL = "GOD CARES 365 <fathercares365@gmail.com>"     
+DEFAULT_FROM_EMAIL = "fathercares365@gmail.com"    
 SERVER_EMAIL = EMAIL_HOST_USER
 
 # Token ya password reset: nusu saa

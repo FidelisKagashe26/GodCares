@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Hariri Wasifu | GOD CARES 365{% endblock %}
+{% block content %}
+<div class="card">
+  <form method="post" class="p-4 md:p-6 grid gap-4" data-prevent-double-submit>
+    {% csrf_token %}
+    <h1 class="text-xl md:text-2xl font-extrabold">Hariri Wasifu</h1>
+
+    {% if form.non_field_errors %}
+      <div class="text-red-600 text-sm">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <div class="grid md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-semibold mb-1">Username</label>
+        {{ form.username }}
+        {% if form.username.errors %}<p class="text-sm text-red-600 mt-1">{{ form.username.errors.0 }}</p>{% endif %}
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold mb-1">Barua pepe</label>
+        {{ form.email }}
+        {% if form.email.errors %}<p class="text-sm text-red-600 mt-1">{{ form.email.errors.0 }}</p>{% endif %}
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold mb-1">Jina la Kwanza</label>
+        {{ form.first_name }}
+        {% if form.first_name.errors %}<p class="text-sm text-red-600 mt-1">{{ form.first_name.errors.0 }}</p>{% endif %}
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold mb-1">Jina la Mwisho</label>
+        {{ form.last_name }}
+        {% if form.last_name.errors %}<p class="text-sm text-red-600 mt-1">{{ form.last_name.errors.0 }}</p>{% endif %}
+      </div>
+
+      {% if form.phone_number %}
+      <div class="md:col-span-2">
+        <label class="block text-sm font-semibold mb-1">Namba ya Simu</label>
+        {{ form.phone_number }}
+        {% if form.phone_number.errors %}<p class="text-sm text-red-600 mt-1">{{ form.phone_number.errors.0 }}</p>{% endif %}
+      </div>
+      {% endif %}
+
+      {% if form.receive_notifications %}
+      <div class="md:col-span-2">
+        <label class="inline-flex items-center gap-2">
+          {{ form.receive_notifications }}
+          <span class="text-sm font-semibold">Pokea arifa kwenye email</span>
+        </label>
+        {% if form.receive_notifications.errors %}<p class="text-sm text-red-600 mt-1">{{ form.receive_notifications.errors.0 }}</p>{% endif %}
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="grid grid-flow-col auto-cols-max gap-2">
+      <button type="submit" class="btn-primary" data-submit-btn>Hifadhi</button>
+      <a href="{% url 'password_change' %}" class="btn-secondary">
+        <i class="fa-solid fa-key mr-2"></i>Badili Nenosiri
+      </a>
+    </div>
+  </form>
+</div>
+{% endblock %}

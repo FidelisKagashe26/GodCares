@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Matokeo ya Utafutaji | GOD CARES 365{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="p-4 md:p-6 grid gap-4">
+    <h1 class="text-xl md:text-2xl font-extrabold">Utafute kwenye tovuti</h1>
+
+    <form action="{% url 'site_search' %}" method="get" class="grid md:grid-cols-[1fr,auto] gap-2">
+      <input name="q" type="search" value="{{ q|default_if_none:'' }}"
+             placeholder="Tafuta masomo, makala, matukio..."
+             class="search-input">
+      <button class="search-btn" type="submit">Tafuta</button>
+    </form>
+
+    {% if q %}
+      <div class="text-sm text-gray-600 dark:text-gray-300">
+        Matokeo: <span class="font-semibold">{{ total }}</span> kwa neno <span class="font-semibold">"{{ q }}"</span>
+      </div>
+
+      <div class="divide-y divide-gray-200 dark:divide-gray-800">
+        {% for r in page_obj %}
+          <a href="{{ r.url|default:'#' }}" class="block py-3 hover:bg-gray-50 dark:hover:bg-gray-900 px-2">
+            <div class="text-xs uppercase tracking-wider text-gray-500">{{ r.type }}</div>
+            <div class="font-semibold">{{ r.title }}</div>
+            {% if r.snippet %}<div class="text-sm text-gray-600 dark:text-gray-300 mt-0.5">{{ r.snippet|truncatechars:180 }}</div>{% endif %}
+          </a>
+        {% empty %}
+          <div class="py-8 text-center text-gray-500">Hakuna kilichopatikana.</div>
+        {% endfor %}
+      </div>
+
+      {% if page_obj.has_other_pages %}
+      <div class="mt-4 grid grid-flow-col auto-cols-max gap-2 justify-center">
+        {% if page_obj.has_previous %}
+          <a class="btn-secondary" href="?q={{ q|urlencode }}&page={{ page_obj.previous_page_number }}">Nyuma</a>
+        {% endif %}
+        <span class="px-3 py-2 border-2 border-gray-200 dark:border-gray-700">Uk {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+          <a class="btn-secondary" href="?q={{ q|urlencode }}&page={{ page_obj.next_page_number }}">Mbele</a>
+        {% endif %}
+      </div>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
