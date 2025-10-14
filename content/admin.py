@@ -1,17 +1,27 @@
 from django.contrib import admin, messages
 from django.utils.html import format_html
 from django.utils import timezone
-
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 from .models import (
     Category, Post, Season, Series, Lesson, Event, MediaItem, PrayerRequest,
-    LessonLike, LessonComment, Announcement, Profile, SiteSettings
+    LessonLike, LessonComment, Announcement, Profile, SiteSetting
 )
 
-@admin.register(SiteSettings)
-class SiteSettingsAdmin(admin.ModelAdmin):
+@admin.register(SiteSetting)
+class SiteSettingAdmin(admin.ModelAdmin):
+    change_form_template = None  # default
+
     def has_add_permission(self, request):
-        # ruhusu 1 tu
-        return not SiteSettings.objects.exists() or super().has_add_permission(request)
+        # ruhusu Add tu kama hakuna record
+        return not SiteSetting.objects.exists()
+
+    def changelist_view(self, request, extra_context=None):
+        try:
+            obj = SiteSetting.objects.get(pk=1)
+            return HttpResponseRedirect(reverse("admin:content_sitesetting_change", args=(obj.pk,)))
+        except SiteSetting.DoesNotExist:
+            return HttpResponseRedirect(reverse("admin:content_sitesetting_add"))
     
 # ===========================
 # Inlines for Lesson

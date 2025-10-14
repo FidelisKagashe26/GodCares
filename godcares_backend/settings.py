@@ -206,3 +206,7 @@ EMAIL_VALIDATION_TIMEOUT = 3  # sekunde za DNS lookup
 
 # (Hiari) Ruhusu reset tu kwa waliothibitisha email
 RESET_REQUIRE_VERIFIED_EMAIL = True
+
+SITE_NAME = "GOD CARES 365"
+SITE_FROM_NAME = "GOD CARES 365"
+DEFAULT_FROM_EMAIL = "fathercares365@gmail.com"

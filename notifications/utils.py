@@ -5,16 +5,24 @@ from django.contrib.auth import get_user_model
 from django.core.mail import send_mass_mail
 from django.db import transaction
 from django.template.loader import render_to_string
-
+from email.utils import parseaddr, formataddr
 from .models import Notification
 
 User = get_user_model()
 
 def _from_email():
-    # Jaribu kupata jina la kirafiki
-    name = getattr(settings, "SITE_NAME", "GOD CARES 365")
-    email = getattr(settings, "DEFAULT_FROM_EMAIL", "no-reply@example.com")
-    return f"{name} <{email}>"
+    # jaribu kusoma toka DB
+    try:
+        from content.models import SiteSetting
+        s = SiteSetting.objects.only("email_from_name", "email_from_address").get(pk=1)
+        display = (s.email_from_name or getattr(settings, "SITE_FROM_NAME", None) or getattr(settings, "SITE_NAME", "GOD CARES 365")).strip()
+        email = (s.email_from_address or getattr(settings, "DEFAULT_FROM_EMAIL", "no-reply@example.com")).strip()
+    except Exception:
+        display = (getattr(settings, "SITE_FROM_NAME", None) or getattr(settings, "SITE_NAME", "GOD CARES 365")).strip()
+        email = getattr(settings, "DEFAULT_FROM_EMAIL", "no-reply@example.com").strip()
+
+    d, e = parseaddr(f"{display} <{email}>")
+    return formataddr((d or display, e or email))
 
 def _opted_in_users() -> Iterable[User]:
     # Users walio hai + profile.receive_notifications True

@@ -416,20 +416,39 @@ class Announcement(models.Model):
     def __str__(self):
         return self.title
 
-class SiteSettings(models.Model):
-    site_name = models.CharField(max_length=100, default="GOD CARES 365")
-    from_email = models.EmailField(default="no-reply@example.com")
+class SiteSetting(models.Model):
+    # tunalazimisha iwe single row: PK=1
+    site_name = models.CharField(max_length=120, default="GOD CARES 365")
+    tagline = models.CharField(max_length=200, blank=True)
+
+    # Contacts
     contact_email = models.EmailField(blank=True)
-    phone_primary = models.CharField(max_length=30, blank=True)
-    phone_secondary = models.CharField(max_length=30, blank=True)
+    contact_phone = models.CharField(max_length=50, blank=True)
+    address = models.CharField(max_length=200, blank=True)
+
+    # Socials
     facebook_url = models.URLField(blank=True)
     twitter_url = models.URLField(blank=True)
     instagram_url = models.URLField(blank=True)
-    footer_team = models.TextField(blank=True, help_text="Orodha/maelezo mafupi ya timu")
 
-    # weka 1 tu
+    # Footer “about”
+    footer_about = models.TextField(blank=True, default="Tovuti hii imeundwa kukuimarisha katika imani, kukuunga mkono katika maombi, na kukupeleka karibu na Mungu.")
+
+    # Email “from”
+    email_from_name = models.CharField(max_length=120, default="GOD CARES 365")
+    email_from_address = models.EmailField(default="fathercares365@gmail.com")
+
+    # Global notification default (hiari)
+    notifications_opt_in_default = models.BooleanField(default=True)
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.pk = 1
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return "Site Settings"
 
     class Meta:
+        verbose_name = "Site Setting"
         verbose_name_plural = "Site Settings"

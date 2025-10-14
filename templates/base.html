@@ -547,15 +547,11 @@
   </nav>
 
   <!-- MAIN CONTENT -->
-  <main class="min-h-screen">
-    <div class="page-container py-5 lg:py-8">
-      <div class="content-frame">
-        <div class="grid grid-cols-1 gap-4 lg:gap-6">
-          {% block content %}{% endblock %}
-        </div>
-      </div>
+  <div class="content-frame mt-20 lg:mt-32 mx-2">
+    <div class="grid grid-cols-1 gap-4 pt-8 lg:gap-6">
+      {% block content %}{% endblock %}
     </div>
-  </main>
+  </div>
 
   <!-- FOOTER -->
   <footer class="bg-gray-950 text-gray-300 border-t-8 border-gray-800">
@@ -566,24 +562,32 @@
         <!-- About Column -->
         <div class="footer-col lg:border-l-0 lg:pl-0">
           <div class="grid grid-flow-col auto-cols-max items-center gap-3 mb-4">
-            <img src="{% static 'images/logo.png' %}" alt="GOD CARES 365" class="h-8 w-auto">
+            <img src="{% static 'images/logo.png' %}" alt="{{ site_settings.site_name|default:'GOD CARES 365' }}" class="h-8 w-auto">
             <h3 class="footer-title">
               <span class="text-yellow-500">GOD</span> 
               <span class="text-blue-600">CARES</span> 
               <span class="text-green-700">365</span>
             </h3>
           </div>
-          <p class="text-sm lg:text-base mb-4">Tovuti hii imeundwa kukuimarisha katika imani, kukuunga mkono katika maombi, na kukupeleka karibu na Mungu.</p>
+          <p class="text-sm lg:text-base mb-4">
+            {{ site_settings.footer_about|default:"Tovuti hii imeundwa kukuimarisha katika imani, kukuunga mkono katika maombi, na kukupeleka karibu na Mungu." }}
+          </p>
           <div class="grid grid-flow-col auto-cols-max gap-4">
-            <a href="#" class="text-gray-400 hover:text-white transition-colors" aria-label="Facebook">
+            {% if site_settings.facebook_url %}
+            <a href="{{ site_settings.facebook_url }}" class="text-gray-400 hover:text-white transition-colors" aria-label="Facebook" rel="noopener" target="_blank">
               <i class="fab fa-facebook text-xl"></i>
             </a>
-            <a href="#" class="text-gray-400 hover:text-white transition-colors" aria-label="Twitter">
+            {% endif %}
+            {% if site_settings.twitter_url %}
+            <a href="{{ site_settings.twitter_url }}" class="text-gray-400 hover:text-white transition-colors" aria-label="Twitter" rel="noopener" target="_blank">
               <i class="fab fa-twitter text-xl"></i>
             </a>
-            <a href="#" class="text-gray-400 hover:text-white transition-colors" aria-label="Instagram">
+            {% endif %}
+            {% if site_settings.instagram_url %}
+            <a href="{{ site_settings.instagram_url }}" class="text-gray-400 hover:text-white transition-colors" aria-label="Instagram" rel="noopener" target="_blank">
               <i class="fab fa-instagram text-xl"></i>
             </a>
+            {% endif %}
           </div>
         </div>
 
@@ -615,24 +619,30 @@
         <div class="footer-col sm:pl-0 lg:pl-6">
           <h3 class="footer-title mb-4">Wasiliana Nasi</h3>
           <div class="space-y-3 text-sm lg:text-base">
+            {% if site_settings.contact_email %}
             <div class="grid grid-flow-col auto-cols-max items-start gap-3">
               <i class="fas fa-envelope mt-1" style="color:var(--accent-400)"></i>
-              <span>fmklink@gmail.com</span>
+              <span>{{ site_settings.contact_email }}</span>
             </div>
+            {% endif %}
+            {% if site_settings.contact_phone %}
             <div class="grid grid-flow-col auto-cols-max items-start gap-3">
               <i class="fas fa-phone mt-1" style="color:var(--accent-400)"></i>
-              <span>+255 767 525 234</span>
+              <span>{{ site_settings.contact_phone }}</span>
             </div>
+            {% endif %}
+            {% if site_settings.address %}
             <div class="grid grid-flow-col auto-cols-max items-start gap-3">
               <i class="fas fa-map-marker-alt mt-1" style="color:var(--accent-400)"></i>
-              <span>Dar es Salaam, Tanzania</span>
+              <span>{{ site_settings.address }}</span>
             </div>
+            {% endif %}
           </div>
         </div>
       </div>
 
       <div class="mt-8 lg:mt-10 pt-6 lg:pt-8 border-t-2 border-gray-800 text-center text-sm text-gray-400">
-        &copy; {{ current_year }} GOD CARES 365. Haki zote zimehifadhiwa.
+        &copy; {{ current_year }} {{ site_settings.site_name|default:"GOD CARES 365" }}. Haki zote zimehifadhiwa.
       </div>
     </div>
   </footer>
