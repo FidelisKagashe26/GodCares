@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Kikapu - Duka - GOD CARES 365{% endblock %}
+
+{% block content %}
+<section class="container mx-auto px-4 sm:px-6 py-8">
+  <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white mb-4">Kikapu</h1>
+
+  <form method="post" action="{% url 'shop:cart_update' %}" class="card overflow-hidden">
+    {% csrf_token %}
+    <div class="divide-y divide-gray-200 dark:divide-gray-700">
+      {% for it in items %}
+      <div class="p-4 grid grid-cols-[4rem,1fr,auto] items-center gap-4">
+        {% if it.image %}<img src="{{ it.image }}" alt="{{ it.title }}" class="w-16 h-16 object-cover rounded">{% endif %}
+        <div>
+          <a href="{% url 'shop:detail' it.slug %}" class="font-semibold text-gray-900 dark:text-white">{{ it.title }}</a>
+          <div class="text-xs text-gray-500">
+            {% if it.size %}Saizi: {{ it.size }}{% endif %}
+            {% if it.color %}{% if it.size %} • {% endif %}Rangi: {{ it.color }}{% endif %}
+          </div>
+          <div class="text-sm text-gray-600 dark:text-gray-300">Bei: {{ it.price }} TZS</div>
+        </div>
+        <div class="grid gap-2 justify-items-end">
+          <input type="number" name="qty__{{ it.key }}" value="{{ it.qty }}" min="0" class="w-20 border rounded px-2 py-1">
+          <div class="text-sm font-semibold">{{ it.line }} TZS</div>
+          <a href="{% url 'shop:cart_remove' it.key %}" class="text-xs text-red-600 hover:underline">Ondoa</a>
+        </div>
+      </div>
+      {% empty %}
+        <div class="p-6 text-center text-gray-600 dark:text-gray-300">Kikapu kipo tupu.</div>
+      {% endfor %}
+    </div>
+
+    {% if items %}
+    <div class="p-4 flex items-center justify-between">
+      <div class="text-lg font-extrabold">Jumla: {{ total }} TZS</div>
+      <div class="grid grid-flow-col auto-cols-max gap-3">
+        <a href="{% url 'shop:list' %}" class="px-4 py-2 rounded border">Endelea Kununua</a>
+        <button class="px-5 py-2 rounded text-white font-semibold" style="background:var(--accent-600)">Sasisha Kikapu</button>
+        <a href="{% url 'shop:checkout' %}" class="px-5 py-2 rounded text-white font-semibold" style="background:var(--accent-600)">Endelea na Checkout</a>
+      </div>
+    </div>
+    {% endif %}
+  </form>
+</section>
+{% endblock %}

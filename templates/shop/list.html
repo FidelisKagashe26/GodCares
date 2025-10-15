@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Duka - GOD CARES 365{% endblock %}
+
+{% block extra_css %}
+<style type="text/tailwindcss">
+  .card{ @apply bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm; }
+  .prod-card{ @apply relative overflow-hidden hover:shadow-md transition; }
+  .thumb{ @apply w-full h-56 object-cover; }
+  .badge{ @apply absolute left-2 top-2 text-[10px] font-bold uppercase px-2 py-0.5 rounded text-white; }
+  .badge-new{ @apply bg-rose-600; }
+  .badge-sale{ @apply bg-amber-600; }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="container mx-auto px-4 sm:px-6 py-6 md:py-8">
+  <header class="mb-6 md:mb-8 flex flex-wrap items-end gap-3 justify-between">
+    <div>
+      <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white">Duka la GOD CARES 365</h1>
+      <p class="text-gray-600 dark:text-gray-400">Vaa imani yako: T-shirts, kofia, vitambaa, na zaidi.</p>
+    </div>
+    <a href="{% url 'shop:cart' %}" class="grid grid-flow-col auto-cols-max items-center gap-2 px-4 py-2 rounded-lg text-white font-semibold"
+       style="background:var(--accent-600)">
+        {% with cart=request.session.cart %}
+        {% if cart %}
+            <span class="ml-1 text-xs bg-white text-green-900 px-1.5 py-0.5 rounded">
+            {{ cart|length }}
+            </span>
+        {% endif %}
+        {% endwith %}
+      <i class="fas fa-shopping-cart"></i> <span>Kikapu</span>
+    </a>
+  </header>
+
+  <form method="get" class="card p-4 mb-6">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <input type="text" name="q" value="{{ q }}" placeholder="Tafuta bidhaa..."
+             class="col-span-2 md:col-span-2 border rounded-lg px-3 py-2 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700">
+      <select name="cat" class="border rounded-lg px-3 py-2 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700">
+        <option value="">Aina zote</option>
+        {% for c in categories %}
+          <option value="{{ c.slug }}" {% if cat == c.slug %}selected{% endif %}>{{ c.name }}</option>
+        {% endfor %}
+      </select>
+      <button class="px-4 py-2 rounded-lg text-white font-semibold" style="background:var(--accent-600)">
+        <i class="fas fa-filter"></i> Tafuta
+      </button>
+    </div>
+  </form>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+    {% for p in products %}
+    <a href="{{ p.get_absolute_url }}" class="card prod-card">
+      {% if p.image %}<img src="{{ p.image.url }}" alt="{{ p.title }}" class="thumb">
+      {% else %}<img src="{% static 'site/placeholder-800x600.jpg' %}" class="thumb" alt="">{% endif %}
+
+      {% if p.is_new %}<span class="badge badge-new">New</span>{% endif %}
+      {% if p.on_sale %}<span class="badge badge-sale right-2 left-auto">Sale</span>{% endif %}
+
+      <div class="p-4">
+        <h3 class="font-bold text-gray-900 dark:text-white line-clamp-2">{{ p.title }}</h3>
+        <div class="mt-2 flex items-baseline gap-2">
+          <div class="text-lg font-extrabold text-gray-900 dark:text-white">{{ p.price }} TZS</div>
+          {% if p.on_sale %}<div class="text-sm line-through text-gray-500">{{ p.compare_at_price }} TZS</div>{% endif %}
+        </div>
+        {% if p.category %}<div class="mt-1 text-xs text-gray-500">{{ p.category.name }}</div>{% endif %}
+      </div>
+    </a>
+    {% empty %}
+      <div class="col-span-full card p-6 text-center text-gray-600 dark:text-gray-300">Hakuna bidhaa kwa sasa.</div>
+    {% endfor %}
+  </div>
+
+  {% if products.paginator.num_pages > 1 %}
+  <div class="mt-6 flex justify-center gap-2">
+    {% if products.has_previous %}
+      <a class="px-3 py-1 border rounded" href="?page={{ products.previous_page_number }}&q={{ q }}&cat={{ cat }}">«</a>
+    {% endif %}
+    <span class="px-3 py-1 border rounded bg-gray-100 dark:bg-gray-800">{{ products.number }} / {{ products.paginator.num_pages }}</span>
+    {% if products.has_next %}
+      <a class="px-3 py-1 border rounded" href="?page={{ products.next_page_number }}&q={{ q }}&cat={{ cat }}">»</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

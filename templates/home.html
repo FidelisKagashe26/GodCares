@@ -1,242 +1,404 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Nyumbani - GOD CARES 365{% endblock %}
 
+{% block extra_css %}
+<style type="text/tailwindcss">
+  .home-page{ font-family: Inter, Roboto, system-ui, -apple-system, "Segoe UI", Arial, "Noto Sans", "Helvetica Neue", sans-serif; }
+
+  /* ===== Hero Slider ===== */
+  .hero-wrap{ @apply relative w-full; }
+  .hero-viewport{ @apply relative overflow-hidden h-[60vh] sm:h-[70vh] lg:h-screen; }
+  .hero-track{ @apply flex h-full transition-transform duration-700 ease-out; will-change: transform; }
+  .hero-slide{ @apply relative flex-shrink-0 w-full h-full; }
+  .hero-slide img{ @apply absolute inset-0 w-full h-full object-cover; }
+  .hero-gradient{ @apply absolute inset-0 bg-gradient-to-b from-black/40 via-black/25 to-black/70; }
+  .hero-content{ @apply absolute inset-x-0 bottom-0 p-4 sm:p-6 md:p-8 lg:p-10 text-white; }
+  .hero-title{ @apply text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight; }
+  .hero-sub{ @apply mt-3 text-base sm:text-lg md:text-xl max-w-3xl; }
+
+  .hero-ctrl{ @apply absolute inset-y-0 flex items-center px-2 sm:px-3; }
+  .hero-btn{ @apply grid place-items-center w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur; }
+  .btn-prev{ left: .25rem; } .btn-next{ right: .25rem; }
+
+  .hero-dots{ @apply absolute left-0 right-0 bottom-3 sm:bottom-4 flex justify-center gap-2; }
+  .hero-dot{ @apply w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-white/40 hover:bg-white/70 ring-2 ring-white/30; }
+  .hero-dot[aria-current="true"]{ @apply bg-white; }
+
+  /* Quick actions */
+  .quick-grid{ @apply grid gap-3 sm:auto-cols-max sm:grid-flow-col justify-center; }
+
+  /* Cards */
+  .card{ @apply bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm; }
+
+  /* Feature thumbs (picha badala ya icons) */
+  .feat-thumb{ @apply w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-800 shadow-md; }
+  .feat-thumb img{ @apply w-full h-full object-cover; }
+
+  /* Sidebar */
+  @media (min-width:1024px){ .sticky-sidebar{ position: sticky; top: 5rem; } }
+  .side-item{ @apply grid grid-cols-[3rem,1fr] items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition; }
+  .side-thumb{ @apply w-12 h-12 rounded-lg object-cover bg-gray-200 dark:bg-gray-700; }
+  .side-title{ @apply text-sm font-semibold text-gray-900 dark:text-white line-clamp-2; }
+  .side-meta{ @apply text-xs text-gray-600 dark:text-gray-400; }
+
+  /* Gallery carousel (picha zinazotembea) */
+  .gal-viewport{ @apply relative overflow-hidden; }
+  .gal-track{ @apply flex gap-4 transition-transform duration-700 ease-out; will-change: transform; }
+  .gal-item{ @apply relative w-[260px] sm:w-[320px] h-[170px] sm:h-[200px] rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm; }
+  .gal-item img{ @apply w-full h-full object-cover; }
+  .gal-ctrl{ @apply absolute inset-y-0 flex items-center; }
+  .gal-btn{ @apply w-9 h-9 grid place-items-center rounded-full bg-black/40 text-white hover:bg-black/60; }
+  .gal-prev{ left: .5rem; } .gal-next{ right: .5rem; }
+
+  .section{ @apply py-10 md:py-12; }
+</style>
+{% endblock %}
+
 {% block content %}
-<!-- Hero Section -->
-<section class="relative bg-gradient-to-r from-green-600 to-blue-600 text-white py-16 lg:py-20 -mt-4 sm:-mt-6 lg:-mt-10">
-  <div class="absolute inset-0 bg-black opacity-20"></div>
-  <div class="relative container mx-auto px-6 text-center">
-    <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 leading-tight">
-      Karibu GOD CARES 365
-    </h1>
-    <p class="text-lg md:text-xl lg:text-2xl mb-10 max-w-3xl mx-auto leading-relaxed">
-      Tovuti ya kiroho yenye masomo ya Biblia, maombi, na rasilimali za imani
-    </p>
+<div class="home-page">
 
-    <!-- buttons: GRID -->
-    <div class="grid gap-4 sm:auto-cols-max sm:grid-flow-col justify-center justify-items-center">
-      <a href="{% url 'bible_studies' %}"
-         class="bg-white text-green-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-all hover:scale-105 grid grid-flow-col auto-cols-max items-center justify-center gap-2 shadow-lg">
-        <i class="fas fa-book text-xl"></i>
-        <span>Anza Kusoma</span>
-      </a>
-      <a href="{% url 'prayer_requests' %}"
-         class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-green-600 transition-all hover:scale-105 grid grid-flow-col auto-cols-max items-center justify-center gap-2 shadow-lg">
-        <i class="fas fa-heart text-xl"></i>
-        <span>Omba Nasi</span>
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- Features Section -->
-<section class="py-12 lg:py-16">
-  <div class="container mx-auto px-4 sm:px-6">
-    <h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-12 text-gray-800 dark:text-white">
-      Chagua Kituo
-    </h2>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-
-      <!-- Bible Studies -->
-      <a href="{% url 'bible_studies' %}" class="card p-6 lg:p-8 text-center group hover:scale-105 transition-transform">
-        <div class="w-20 h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl grid place-items-center mx-auto mb-5 group-hover:from-green-200 group-hover:to-green-300 transition-all shadow-md">
-          <img src="https://images.pexels.com/photos/1112048/pexels-photo-1112048.jpeg?auto=compress&cs=tinysrgb&w=200"
-               alt="Bible"
-               class="w-14 h-14 lg:w-16 lg:h-16 object-cover rounded-xl">
-        </div>
-        <h3 class="text-xl lg:text-2xl font-bold mb-3 text-gray-800 dark:text-white">Masomo ya Biblia</h3>
-        <p class="text-gray-600 dark:text-gray-300 mb-5 leading-relaxed">
-          Pata masomo ya kina ya Biblia yaliyopangwa kwa misimu na mfululizo
-        </p>
-        <div class="grid grid-flow-col auto-cols-max gap-2 justify-center text-green-600 group-hover:text-green-700 font-semibold">
-          <span>Jifunze Zaidi</span>
-          <i class="fas fa-arrow-right"></i>
-        </div>
-      </a>
-
-      <!-- Prayer Requests -->
-      <a href="{% url 'prayer_requests' %}" class="card p-6 lg:p-8 text-center group hover:scale-105 transition-transform">
-        <div class="w-20 h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-red-100 to-pink-200 rounded-2xl grid place-items-center mx-auto mb-5 group-hover:from-red-200 group-hover:to-pink-300 transition-all shadow-md">
-          <img src="https://images.pexels.com/photos/8674520/pexels-photo-8674520.jpeg?auto=compress&cs=tinysrgb&w=200"
-               alt="Prayer"
-               class="w-14 h-14 lg:w-16 lg:h-16 object-cover rounded-xl">
-        </div>
-        <h3 class="text-xl lg:text-2xl font-bold mb-3 text-gray-800 dark:text-white">Maombi</h3>
-        <p class="text-gray-600 dark:text-gray-300 mb-5 leading-relaxed">
-          Tuma maombi yako na tuombe pamoja kama jamii ya imani
-        </p>
-        <div class="grid grid-flow-col auto-cols-max gap-2 justify-center text-green-600 group-hover:text-red-600 font-semibold">
-          <span>Omba Nasi</span>
-          <i class="fas fa-arrow-right"></i>
-        </div>
-      </a>
-
-      <!-- News -->
-      <a href="{% url 'news' %}" class="card p-6 lg:p-8 text-center group hover:scale-105 transition-transform">
-        <div class="w-20 h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-blue-100 to-indigo-200 rounded-2xl grid place-items-center mx-auto mb-5 group-hover:from-blue-200 group-hover:to-indigo-300 transition-all shadow-md">
-          <img src="https://images.pexels.com/photos/518543/pexels-photo-518543.jpeg?auto=compress&cs=tinysrgb&w=200"
-               alt="News"
-               class="w-14 h-14 lg:w-16 lg:h-16 object-cover rounded-xl">
-        </div>
-        <h3 class="text-xl lg:text-2xl font-bold mb-3 text-gray-800 dark:text-white">Habari & Vipengele</h3>
-        <p class="text-gray-600 dark:text-gray-300 mb-5 leading-relaxed">
-          Soma makala za kiroho na habari za jamii yetu
-        </p>
-        <div class="grid grid-flow-col auto-cols-max gap-2 justify-center text-green-600 group-hover:text-blue-600 font-semibold">
-          <span>Soma Habari</span>
-          <i class="fas fa-arrow-right"></i>
-        </div>
-      </a>
-
-      <!-- Events -->
-      <a href="{% url 'events' %}" class="card p-6 lg:p-8 text-center group hover:scale-105 transition-transform">
-        <div class="w-20 h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-yellow-100 to-orange-200 rounded-2xl grid place-items-center mx-auto mb-5 group-hover:from-yellow-200 group-hover:to-orange-300 transition-all shadow-md">
-          <img src="https://images.pexels.com/photos/1157557/pexels-photo-1157557.jpeg?auto=compress&cs=tinysrgb&w=200"
-               alt="Events"
-               class="w-14 h-14 lg:w-16 lg:h-16 object-cover rounded-xl">
-        </div>
-        <h3 class="text-xl lg:text-2xl font-bold mb-3 text-gray-800 dark:text-white">Matukio Maalum</h3>
-        <p class="text-gray-600 dark:text-gray-300 mb-5 leading-relaxed">
-          Angalia matukio yetu ya siku zijazo na jiunge nasi
-        </p>
-        <div class="grid grid-flow-col auto-cols-max gap-2 justify-center text-green-600 group-hover:text-orange-600 font-semibold">
-          <span>Angalia Matukio</span>
-          <i class="fas fa-arrow-right"></i>
-        </div>
-      </a>
-
-      <!-- Donations -->
-      <a href="{% url 'donations' %}" class="card p-6 lg:p-8 text-center group hover:scale-105 transition-transform">
-        <div class="w-20 h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-teal-100 to-cyan-200 rounded-2xl grid place-items-center mx-auto mb-5 group-hover:from-teal-200 group-hover:to-cyan-300 transition-all shadow-md">
-          <img src="https://images.pexels.com/photos/6646918/pexels-photo-6646918.jpeg?auto=compress&cs=tinysrgb&w=200"
-               alt="Donations"
-               class="w-14 h-14 lg:w-16 lg:h-16 object-cover rounded-xl">
-        </div>
-        <h3 class="text-xl lg:text-2xl font-bold mb-3 text-gray-800 dark:text-white">Michango</h3>
-        <p class="text-gray-600 dark:text-gray-300 mb-5 leading-relaxed">
-          Changia katika kazi ya Mungu na usaidie jamii yetu
-        </p>
-        <div class="grid grid-flow-col auto-cols-max gap-2 justify-center text-green-600 group-hover:text-teal-600 font-semibold">
-          <span>Changia Sasa</span>
-          <i class="fas fa-arrow-right"></i>
-        </div>
-      </a>
-
-      <!-- About -->
-      <a href="{% url 'about' %}" class="card p-6 lg:p-8 text-center group hover:scale-105 transition-transform">
-        <div class="w-20 h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-purple-100 to-fuchsia-200 rounded-2xl grid place-items-center mx-auto mb-5 group-hover:from-purple-200 group-hover:to-fuchsia-300 transition-all shadow-md">
-          <img src="https://images.pexels.com/photos/3184423/pexels-photo-3184423.jpeg?auto=compress&cs=tinysrgb&w=200"
-               alt="About"
-               class="w-14 h-14 lg:w-16 lg:h-16 object-cover rounded-xl">
-        </div>
-        <h3 class="text-xl lg:text-2xl font-bold mb-3 text-gray-800 dark:text-white">Kuhusu Sisi</h3>
-        <p class="text-gray-600 dark:text-gray-300 mb-5 leading-relaxed">
-          Jifunze zaidi kuhusu historia, dhamira, na timu ya GOD CARES 365
-        </p>
-        <div class="grid grid-flow-col auto-cols-max gap-2 justify-center text-green-600 group-hover:text-purple-600 font-semibold">
-          <span>Jifunze Zaidi</span>
-          <i class="fas fa-arrow-right"></i>
-        </div>
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- Quote Section -->
-<section class="py-12 lg:py-16 bg-gradient-to-r from-green-600 to-blue-600 text-white">
-  <div class="container mx-auto px-6 text-center">
-    <div class="max-w-4xl mx-auto">
-      <i class="fas fa-quote-left text-4xl lg:text-5xl opacity-40 mb-6"></i>
-      <blockquote class="text-xl md:text-2xl lg:text-3xl font-bold mb-6 leading-relaxed">
-        "Hili ndilo pendo, si kwamba sisi tulimpenda Mungu, bali kwamba yeye alitupenda sisi, akamtuma Mwanawe kuwa kipatanisho kwa dhambi zetu"
-      </blockquote>
-      <cite class="text-lg lg:text-xl font-semibold tracking-wide">– 1 Yohana 4:10</cite>
-      <i class="fas fa-quote-right text-4xl lg:text-5xl opacity-40 mt-6"></i>
-    </div>
-  </div>
-</section>
-
-<!-- Featured Content -->
-{% if featured_posts or upcoming_events %}
-<section class="py-12 lg:py-16 bg-gray-50 dark:bg-gray-900">
-  <div class="container mx-auto px-4 sm:px-6">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12">
-
-      <!-- Featured Posts -->
-      {% if featured_posts %}
-      <div>
-        <h2 class="text-2xl lg:text-3xl font-extrabold mb-6 lg:mb-8 text-gray-800 dark:text-white grid grid-flow-col auto-cols-max gap-3 items-center">
-          <i class="fas fa-star text-yellow-500"></i>
-          <span>Habari Maalum</span>
-        </h2>
-        <div class="grid gap-5">
-          {% for post in featured_posts %}
-          <a href="{% url 'news_detail' post.slug %}"
-             class="card p-5 grid grid-cols-[auto,1fr] items-center gap-4 hover:scale-[1.02] transition-transform">
-            {% if post.featured_image %}
-              <img src="{{ post.featured_image.url }}"
-                   alt="{{ post.title }}"
-                   class="w-20 h-20 lg:w-24 lg:h-24 object-cover rounded-xl shadow-md">
-            {% else %}
-              <div class="w-20 h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 rounded-xl grid place-items-center shadow-md">
-                <i class="fas fa-newspaper text-3xl text-gray-400 dark:text-gray-500"></i>
-              </div>
+  {# ================= HERO SLIDER ================= #}
+  <section class="hero-wrap" aria-label="Picha Kuu za Kuteleza">
+    <div class="hero-viewport" id="hero-viewport">
+      <div class="hero-track" id="hero-track" style="transform:translateX(0%)" aria-live="polite">
+        {% if hero_slides %}
+          {% for s in hero_slides %}
+          <div class="hero-slide">
+            {% if s.image %}
+              <img src="{{ s.image.url }}" alt="{{ s.alt|default:s.title }}">
             {% endif %}
-            <div class="min-w-0">
-              <h3 class="font-bold text-lg text-gray-800 dark:text-white mb-2 leading-snug">{{ post.title }}</h3>
-              <p class="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">{{ post.excerpt|truncatewords:15 }}</p>
-            </div>
-          </a>
-          {% endfor %}
-        </div>
-      </div>
-      {% endif %}
+            <div class="hero-gradient"></div>
 
-      <!-- Upcoming Events -->
-      {% if upcoming_events %}
-      <div>
-        <h2 class="text-2xl lg:text-3xl font-extrabold mb-6 lg:mb-8 text-gray-800 dark:text-white grid grid-flow-col auto-cols-max gap-3 items-center">
-          <i class="fas fa-calendar-alt text-blue-500"></i>
-          <span>Matukio ya Karibu</span>
-        </h2>
+            <div class="hero-content">
+              {% if forloop.first %}<h1 class="hero-title">{{ s.title|default:"Karibu GOD CARES 365" }}</h1>{% else %}<div class="hero-title">{{ s.title }}</div>{% endif %}
+              {% if s.subtitle %}<p class="hero-sub">{{ s.subtitle }}</p>{% else %}
+                {% if forloop.first %}<p class="hero-sub">Tovuti ya kiroho yenye masomo ya Biblia, maombi, na rasilimali zinazojenga imani.</p>{% endif %}
+              {% endif %}
 
-        <!-- TIMELINE: mstari wa kushoto + nukta -->
-        <div class="relative border-l-4 border-blue-200 dark:border-blue-900 pl-6 lg:pl-8">
-          <div class="grid gap-6">
-            {% for event in upcoming_events %}
-            <a href="{% url 'event_detail' event.slug %}"
-               class="relative grid gap-3 p-4 lg:p-5 rounded-xl hover:bg-white dark:hover:bg-gray-800 transition-all hover:shadow-lg group">
-
-              <!-- nukta kwenye timeline -->
-              <span class="absolute -left-[13px] lg:-left-[15px] top-6 w-5 h-5 lg:w-6 lg:h-6 rounded-full bg-blue-500 group-hover:bg-blue-600 ring-4 ring-blue-100 dark:ring-blue-900/40 transition-all"></span>
-
-              <!-- kichwa -->
-              <h3 class="font-bold text-lg lg:text-xl text-gray-800 dark:text-white leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                {{ event.title }}
-              </h3>
-
-              <!-- tarehe -->
-              <div class="grid grid-flow-col auto-cols-max items-center gap-2 text-sm lg:text-base text-gray-600 dark:text-gray-300">
-                <i class="fas fa-calendar text-blue-500"></i>
-                <span class="font-medium">{{ event.date|date:"d M Y" }}</span>
+              <div class="mt-5 quick-grid">
+                <a href="{% url 'bible_studies' %}" class="bg-white text-emerald-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 shadow-lg grid grid-flow-col auto-cols-max items-center gap-2">
+                  <img src="{% static 'site/ico-bible.png' %}" alt="" class="w-6 h-6" onerror="this.style.display='none'">
+                  <span>Anza Kusoma</span>
+                </a>
+                <a href="{% url 'prayer_requests' %}" class="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white/10 grid grid-flow-col auto-cols-max items-center gap-2">
+                  <img src="{% static 'site/ico-prayer.png' %}" alt="" class="w-6 h-6" onerror="this.style.display='none'">
+                  <span>Omba Nasi</span>
+                </a>
               </div>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="hero-slide">
+            <img src="https://images.pexels.com/photos/1293261/pexels-photo-1293261.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Mandhari ya matumaini">
+            <div class="hero-gradient"></div>
+            <div class="hero-content">
+              <h1 class="hero-title">Karibu GOD CARES 365</h1>
+              <p class="hero-sub">Mahali pa kukua katika Neno la Mungu kila siku.</p>
+              <div class="mt-5 quick-grid">
+                <a href="{% url 'bible_studies' %}" class="bg-white text-emerald-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 shadow-lg grid grid-flow-col auto-cols-max items-center gap-2">
+                  <img src="{% static 'site/ico-bible.png' %}" alt="" class="w-6 h-6" onerror="this.style.display='none'"><span>Anza Kusoma</span>
+                </a>
+                <a href="{% url 'prayer_requests' %}" class="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white/10 grid grid-flow-col auto-cols-max items-center gap-2">
+                  <img src="{% static 'site/ico-prayer.png' %}" alt="" class="w-6 h-6" onerror="this.style.display='none'"><span>Omba Nasi</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      </div>
 
-              <!-- eneo -->
-              <div class="grid grid-flow-col auto-cols-max items-center gap-2 text-sm lg:text-base text-gray-600 dark:text-gray-300">
-                <i class="fas fa-map-marker-alt text-red-500"></i>
-                <span class="truncate">{{ event.location }}</span>
+      {% if hero_slides and hero_slides|length > 1 %}
+      <div class="hero-ctrl btn-prev">
+        <button class="hero-btn" id="hero-prev" aria-label="Picha iliyotangulia"><i class="fas fa-chevron-left"></i></button>
+      </div>
+      <div class="hero-ctrl btn-next">
+        <button class="hero-btn" id="hero-next" aria-label="Picha inayofuata"><i class="fas fa-chevron-right"></i></button>
+      </div>
+      <div class="hero-dots" id="hero-dots" role="tablist" aria-label="Vialama vya slaidi"></div>
+      {% endif %}
+    </div>
+  </section>
+
+  {# ================= MAIN GRID: content + sidebar ================= #}
+  <section class="section">
+    <div class="container mx-auto px-4 sm:px-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        {# MAIN CONTENT #}
+        <div class="lg:col-span-2 space-y-10">
+
+          {# Chagua Kituo (picha badala ya icons) #}
+          <div class="text-center">
+            <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white">Chagua Kituo</h2>
+            <p class="mt-2 text-gray-600 dark:text-gray-300">Anza safari yako ya imani kwa kuchagua huduma hapa chini.</p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <a href="{% url 'bible_studies' %}" class="card p-6 group hover:shadow-md transition">
+              <div class="feat-thumb mb-4">
+                <img src="{% static 'site/feat-bible.jpg' %}" alt="Masomo ya Biblia"
+                     onerror="this.src='https://images.pexels.com/photos/1112048/pexels-photo-1112048.jpeg?auto=compress&cs=tinysrgb&w=800'">
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white">Masomo ya Biblia</h3>
+              <p class="mt-2 text-gray-600 dark:text-gray-300">Masomo ya kina yaliyopangwa kwa misimu na mfululizo.</p>
+              <div class="mt-3 text-emerald-700 font-semibold grid grid-flow-col auto-cols-max items-center gap-2">
+                <span>Jifunze Zaidi</span><i class="fas fa-arrow-right"></i>
               </div>
             </a>
-            {% endfor %}
-          </div>
-        </div>
-      </div>
-      {% endif %}
 
+            <a href="{% url 'prayer_requests' %}" class="card p-6 group hover:shadow-md transition">
+              <div class="feat-thumb mb-4">
+                <img src="{% static 'site/feat-prayer.jpg' %}" alt="Maombi"
+                     onerror="this.src='https://images.pexels.com/photos/8674520/pexels-photo-8674520.jpeg?auto=compress&cs=tinysrgb&w=800'">
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white">Maombi</h3>
+              <p class="mt-2 text-gray-600 dark:text-gray-300">Tuma maombi yako; tuombe pamoja kama familia ya imani.</p>
+              <div class="mt-3 text-rose-600 font-semibold grid grid-flow-col auto-cols-max items-center gap-2">
+                <span>Omba Nasi</span><i class="fas fa-arrow-right"></i>
+              </div>
+            </a>
+
+            <a href="{% url 'news' %}" class="card p-6 group hover:shadow-md transition">
+              <div class="feat-thumb mb-4">
+                <img src="{% static 'site/feat-news.jpg' %}" alt="Habari na Makala"
+                     onerror="this.src='https://images.pexels.com/photos/518543/pexels-photo-518543.jpeg?auto=compress&cs=tinysrgb&w=800'">
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white">Habari & Makala</h3>
+              <p class="mt-2 text-gray-600 dark:text-gray-300">Makala za kiroho na simulizi za kutia moyo.</p>
+              <div class="mt-3 text-sky-600 font-semibold grid grid-flow-col auto-cols-max items-center gap-2">
+                <span>Soma Habari</span><i class="fas fa-arrow-right"></i>
+              </div>
+            </a>
+
+            <a href="{% url 'donations' %}" class="card p-6 group hover:shadow-md transition">
+              <div class="feat-thumb mb-4">
+                <img src="{% static 'site/feat-donate.jpg' %}" alt="Michango"
+                     onerror="this.src='https://images.pexels.com/photos/6646918/pexels-photo-6646918.jpeg?auto=compress&cs=tinysrgb&w=800'">
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white">Michango</h3>
+              <p class="mt-2 text-gray-600 dark:text-gray-300">Shiriki katika kazi ya Mungu kwa kutoa kwa hiari.</p>
+              <div class="mt-3 text-teal-700 font-semibold grid grid-flow-col auto-cols-max items-center gap-2">
+                <span>Changia Sasa</span><i class="fas fa-arrow-right"></i>
+              </div>
+            </a>
+          </div>
+
+          {# About Us #}
+          <div class="card p-6 md:p-8">
+            <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white">Kuhusu GOD CARES 365</h2>
+            <p class="mt-3 text-gray-700 dark:text-gray-300 leading-relaxed">
+              GOD CARES 365 ni jukwaa la kidijitali linalojenga imani kupitia Masomo ya Biblia, Maombi,
+              na Makala za kutia moyo. Dira yetu ni kuwasaidia watu kujenga uhusiano wa karibu na Yesu
+              kupitia Neno na ushuhuda wa kila siku.
+            </p>
+            <ul class="mt-4 grid sm:grid-cols-2 gap-2 text-gray-700 dark:text-gray-300">
+              <li class="grid grid-flow-col auto-cols-max items-center gap-2"><i class="fas fa-check text-emerald-600"></i>Masomo yaliyopangwa kwa misimu na mada</li>
+              <li class="grid grid-flow-col auto-cols-max items-center gap-2"><i class="fas fa-check text-emerald-600"></i>Maombi ya pamoja na faragha</li>
+              <li class="grid grid-flow-col auto-cols-max items-center gap-2"><i class="fas fa-check text-emerald-600"></i>Makala & habari za kiroho</li>
+              <li class="grid grid-flow-col auto-cols-max items-center gap-2"><i class="fas fa-check text-emerald-600"></i>Matukio na huduma za jamii</li>
+            </ul>
+          </div>
+
+          {# Gallery carousel: Picha zinazotembea #}
+          <div class="card p-5 md:p-6">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-xl font-extrabold text-gray-900 dark:text-white">Picha za Huduma</h3>
+              <div class="hidden sm:flex gap-2">
+                <button id="gal-prev" class="gal-btn" aria-label="Iliyotangulia"><i class="fas fa-chevron-left"></i></button>
+                <button id="gal-next" class="gal-btn" aria-label="Inayofuata"><i class="fas fa-chevron-right"></i></button>
+              </div>
+            </div>
+            <div class="gal-viewport" id="gal-viewport">
+              <div class="gal-track" id="gal-track">
+                {% if gallery_images %}
+                  {% for g in gallery_images %}
+                  <div class="gal-item"><img src="{{ g.url }}" alt="{{ g.alt|default:'Picha ya huduma' }}"></div>
+                  {% endfor %}
+                {% else %}
+                  <div class="gal-item"><img src="https://images.unsplash.com/photo-1504051771394-dd2e66b2e08f?q=80&w=1200&auto=format&fit=crop" alt=""></div>
+                  <div class="gal-item"><img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1200&auto=format&fit=crop" alt=""></div>
+                  <div class="gal-item"><img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop" alt=""></div>
+                  <div class="gal-item"><img src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?q=80&w=1200&auto=format&fit=crop" alt=""></div>
+                {% endif %}
+              </div>
+              <div class="gal-ctrl gal-prev sm:hidden"><button id="gal-prev-m" class="gal-btn" aria-label="Iliyotangulia"><i class="fas fa-chevron-left"></i></button></div>
+              <div class="gal-ctrl gal-next sm:hidden"><button id="gal-next-m" class="gal-btn" aria-label="Inayofuata"><i class="fas fa-chevron-right"></i></button></div>
+            </div>
+          </div>
+
+          {# Nukuu ya Biblia #}
+          <div class="card p-8 bg-gradient-to-r from-emerald-600 to-sky-600 text-white">
+            <div class="max-w-4xl">
+              <i class="fas fa-quote-left text-3xl opacity-60"></i>
+              <blockquote class="mt-4 text-2xl font-bold leading-relaxed">
+                “Hili ndilo pendo, si kwamba sisi tulimpenda Mungu, bali kwamba yeye alitupenda sisi...”
+              </blockquote>
+              <div class="mt-3 font-semibold tracking-wide">— 1 Yohana 4:10</div>
+            </div>
+          </div>
+
+          {% if featured_posts %}
+          <div>
+            <h2 class="text-xl md:text-2xl font-extrabold text-gray-900 dark:text-white mb-4">Habari Maalum</h2>
+            <div class="grid gap-4">
+              {% for post in featured_posts %}
+              <a href="{% url 'news_detail' post.slug %}" class="card p-4 grid grid-cols-[auto,1fr] gap-4 hover:shadow-md transition">
+                {% if post.featured_image %}
+                <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" class="w-24 h-24 rounded-lg object-cover side-thumb">
+                {% else %}
+                <div class="w-24 h-24 rounded-lg bg-gray-200 dark:bg-gray-700 grid place-items-center">
+                  <i class="fas fa-newspaper text-gray-500"></i>
+                </div>
+                {% endif %}
+                <div class="min-w-0">
+                  <div class="font-bold text-gray-900 dark:text-white line-clamp-2">{{ post.title }}</div>
+                  <div class="mt-1 text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{{ post.excerpt|default_if_none:""|truncatewords:18 }}</div>
+                </div>
+              </a>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+        </div>
+
+        {# SIDEBAR: lessons & events #}
+        <aside class="sticky-sidebar space-y-6">
+          <div class="card p-5">
+            <div class="flex items-center gap-2 mb-3">
+              <img src="{% static 'site/ico-lesson.png' %}" alt="" class="w-5 h-5" onerror="this.style.display='none'">
+              <h3 class="text-lg font-extrabold text-gray-900 dark:text-white">Masomo ya Hivi Karibuni</h3>
+            </div>
+            <div class="divide-y divide-gray-200 dark:divide-gray-800">
+              {% for lesson in recent_lessons|slice:":5" %}
+              <a href="{% url 'content:lesson_detail' lesson.slug %}" class="side-item">
+                {% if lesson.featured_image %}
+                <img src="{{ lesson.featured_image.url }}" alt="{{ lesson.title }}" loading="lazy" class="side-thumb">
+                {% else %}<div class="side-thumb grid place-items-center"><img src="{% static 'site/ico-bible-gray.png' %}" class="w-5 h-5 opacity-60" onerror="this.style.display='none'"></div>{% endif %}
+                <div class="min-w-0">
+                  <div class="side-title">{{ lesson.title }}</div>
+                  <div class="side-meta"><i class="far fa-clock mr-1"></i>{{ lesson.created_at|date:"d M Y" }}</div>
+                </div>
+              </a>
+              {% empty %}
+              <p class="text-sm text-gray-600 dark:text-gray-400 p-2">Hakuna somo jipya kwa sasa.</p>
+              {% endfor %}
+            </div>
+            <div class="mt-3 text-right">
+              <a href="{% url 'bible_studies' %}" class="text-emerald-700 hover:underline font-semibold text-sm">Tazama yote →</a>
+            </div>
+          </div>
+
+          <div class="card p-5">
+            <div class="flex items-center gap-2 mb-3">
+              <img src="{% static 'site/ico-event.png' %}" alt="" class="w-5 h-5" onerror="this.style.display='none'">
+              <h3 class="text-lg font-extrabold text-gray-900 dark:text-white">Matukio ya Karibu</h3>
+            </div>
+            <div class="space-y-2">
+              {% for e in upcoming_events|slice:":5" %}
+              <a href="{% url 'event_detail' e.slug %}" class="block p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+                <div class="font-semibold text-gray-900 dark:text-white line-clamp-2">{{ e.title }}</div>
+                <div class="mt-1 text-xs text-gray-600 dark:text-gray-400 grid grid-flow-col auto-cols-max items-center gap-2">
+                  <i class="far fa-clock"></i><span>{{ e.date|date:"d M Y" }}</span>
+                  <span class="opacity-50">•</span>
+                  <i class="fas fa-map-marker-alt"></i><span class="truncate">{{ e.location }}</span>
+                </div>
+              </a>
+              {% empty %}
+              <p class="text-sm text-gray-600 dark:text-gray-400">Hakuna tukio lililopangwa sasa.</p>
+              {% endfor %}
+            </div>
+            <div class="mt-3 text-right">
+              <a href="{% url 'events' %}" class="text-sky-700 hover:underline font-semibold text-sm">Tazama yote →</a>
+            </div>
+          </div>
+        </aside>
+
+      </div>
     </div>
-  </div>
-</section>
-{% endif %}
+  </section>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function(){
+  /* ===== HERO slider ===== */
+  const track = document.getElementById('hero-track');
+  if(track){
+    const viewport = document.getElementById('hero-viewport');
+    const slides = Array.from(track.children);
+    const dotsWrap = document.getElementById('hero-dots');
+    const prevBtn = document.getElementById('hero-prev');
+    const nextBtn = document.getElementById('hero-next');
+    const withControls = !!dotsWrap;
+
+    let i = 0, timer = null, startX = null;
+
+    function set(n){
+      i = (n + slides.length) % slides.length;
+      track.style.transform = `translateX(-${i*100}%)`;
+      if(withControls){
+        dotsWrap.querySelectorAll('button').forEach((d,idx)=> d.setAttribute('aria-current', idx===i ? 'true':'false'));
+      }
+    }
+    function play(){ if(timer || slides.length<2) return; timer = setInterval(()=> set(i+1), 6000); }
+    function stop(){ if(timer){ clearInterval(timer); timer=null; } }
+
+    if(withControls){
+      dotsWrap.innerHTML = slides.map((_,idx)=> `<button class="hero-dot" aria-label="Slaidi ${idx+1}" ${idx===0?'aria-current="true"':''}></button>`).join('');
+      dotsWrap.querySelectorAll('button').forEach((b,idx)=> b.addEventListener('click', ()=>{ stop(); set(idx); play(); }));
+      prevBtn?.addEventListener('click', ()=>{ stop(); set(i-1); play(); });
+      nextBtn?.addEventListener('click', ()=>{ stop(); set(i+1); play(); });
+    }
+
+    viewport.addEventListener('mouseenter', stop);
+    viewport.addEventListener('mouseleave', play);
+    viewport.addEventListener('focusin', stop);
+    viewport.addEventListener('focusout', play);
+
+    viewport.addEventListener('touchstart', e=>{ startX = e.touches[0].clientX; }, {passive:true});
+    viewport.addEventListener('touchend', e=>{
+      if(startX==null) return;
+      const dx = e.changedTouches[0].clientX - startX;
+      if(Math.abs(dx) > 40){ stop(); set(i + (dx<0?1:-1)); play(); }
+      startX=null;
+    });
+
+    viewport.addEventListener('keydown', e=>{
+      if(e.key==='ArrowLeft'){ stop(); set(i-1); play(); }
+      else if(e.key==='ArrowRight'){ stop(); set(i+1); play(); }
+    });
+    viewport.tabIndex = 0;
+
+    set(0); play();
+  }
+
+  /* ===== GALLERY carousel ===== */
+  const gTrack = document.getElementById('gal-track');
+  if(gTrack){
+    const items = Array.from(gTrack.children);
+    let gi = 0, gTimer = null;
+    const step = 1;
+    const prev = document.getElementById('gal-prev') || document.getElementById('gal-prev-m');
+    const next = document.getElementById('gal-next') || document.getElementById('gal-next-m');
+
+    function gSet(n){
+      gi = (n + items.length) % items.length;
+      const width = items[0].getBoundingClientRect().width + 16; // item + gap
+      gTrack.style.transform = `translateX(-${gi*width}px)`;
+    }
+    function gPlay(){ if(gTimer || items.length<2) return; gTimer = setInterval(()=> gSet(gi+step), 5000); }
+    function gStop(){ if(gTimer){ clearInterval(gTimer); gTimer=null; } }
+
+    prev?.addEventListener('click', ()=>{ gStop(); gSet(gi-1); gPlay(); });
+    next?.addEventListener('click', ()=>{ gStop(); gSet(gi+1); gPlay(); });
+
+    gSet(0); gPlay();
+  }
+})();
+</script>
 {% endblock %}

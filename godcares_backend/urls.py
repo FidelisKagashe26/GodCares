@@ -88,6 +88,7 @@ urlpatterns = [
 
     # Content app (pages + API under /api/)
     path("", include(("content.urls", "content"), namespace="content")),
+    path("duka/", include("shop.urls", namespace="shop")),
     path("", include("notifications.urls")),
 
     # DRF browsable login (optional)

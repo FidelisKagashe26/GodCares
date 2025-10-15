@@ -433,6 +433,12 @@
             <span>Michango</span>
           </a>
 
+          <a href="{% url 'shop:list' %}" 
+             class="nav-link {% if request.resolver_match.url_name == 'donations' %}active{% endif %}">
+            <i class="fas fa-store"></i>
+            <span>Bidhaa</span>
+          </a>
+
         </div>
       </div>
 
@@ -475,6 +481,11 @@
         <a href="{% url 'donations' %}" class="mobile-nav-link">
           <i class="fas fa-donate"></i>
           <span>Michango</span>
+        </a>
+
+        <a href="{% url 'shop:list' %}" class="mobile-nav-link">
+          <i class="fas fa-store"></i>
+          <span>Bidhaa</span>
         </a>
 
         <!-- HABARI Section -->

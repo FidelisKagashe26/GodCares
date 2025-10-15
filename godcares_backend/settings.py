@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'django_filters',
+    'shop',
     
     # Local apps
     'content.apps.ContentConfig',
