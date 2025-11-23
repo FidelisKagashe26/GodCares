@@ -3,36 +3,43 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from . import views
 
-# ===== DRF Router (weka tu kama ViewSets zipo) =====
-try:
-    from .views import (
-        CategoryViewSet, PostViewSet, SeasonViewSet, SeriesViewSet,
-        LessonViewSet, EventViewSet, MediaItemViewSet, PrayerRequestViewSet,
-    )
-    router = DefaultRouter()
-    router.register(r'categories', CategoryViewSet, basename='category')
-    router.register(r'posts', PostViewSet, basename='post')
-    router.register(r'seasons', SeasonViewSet, basename='season')
-    router.register(r'series', SeriesViewSet, basename='series')
-    router.register(r'lessons', LessonViewSet, basename='lesson')
-    router.register(r'events', EventViewSet, basename='event')
-    router.register(r'media', MediaItemViewSet, basename='mediaitem')
-    router.register(r'prayer-requests', PrayerRequestViewSet, basename='prayerrequest')
-except Exception:
-    router = DefaultRouter()  # endelea bila viewsets ikiwa bado hujazitengeneza
+# Create router for API endpoints
+router = DefaultRouter()
+
+# Content endpoints
+router.register(r'categories', views.CategoryViewSet, basename='category')
+router.register(r'posts', views.PostViewSet, basename='post')
+router.register(r'seasons', views.SeasonViewSet, basename='season')
+router.register(r'series', views.SeriesViewSet, basename='series')
+router.register(r'lessons', views.LessonViewSet, basename='lesson')
+router.register(r'events', views.EventViewSet, basename='event')
+router.register(r'media', views.MediaItemViewSet, basename='media')
+router.register(r'prayer-requests', views.PrayerRequestViewSet, basename='prayerrequest')
+router.register(r'lesson-comments', views.LessonCommentViewSet, basename='lessoncomment')
+router.register(r'lesson-likes', views.LessonLikeViewSet, basename='lessonlike')
+router.register(r'announcements', views.AnnouncementViewSet, basename='announcement')
+router.register(r'profiles', views.ProfileViewSet, basename='profile')
+router.register(r'site-settings', views.SiteSettingViewSet, basename='sitesetting')
+
+# Mission Platform endpoints
+router.register(r'discipleship-journeys', views.DiscipleshipJourneyViewSet, basename='discipleshipjourney')
+router.register(r'stage-progress', views.StageProgressViewSet, basename='stageprogress')
+router.register(r'mission-reports', views.MissionReportViewSet, basename='missionreport')
+router.register(r'bible-study-groups', views.BibleStudyGroupViewSet, basename='biblestudygroup')
+router.register(r'baptism-records', views.BaptismRecordViewSet, basename='baptismrecord')
+router.register(r'mission-map-locations', views.MissionMapLocationViewSet, basename='missionmaplocation')
+router.register(r'certificates', views.CertificateViewSet, basename='certificate')
+router.register(r'global-souls-counter', views.GlobalSoulsCounterViewSet, basename='globalsoulscounter')
 
 app_name = "content"
 
 urlpatterns = [
-    # Pages
-    path("signup/", views.signup_view, name="signup"),
-    path("verify-email/", views.verify_email_view, name="verify_email"),
-    path("verify-email/resend/", views.resend_verification_view, name="verify_resend"),
-    path("lessons/<slug:slug>/", views.lesson_detail, name="lesson_detail"),
-    path("lessons/<slug:slug>/like/", views.lesson_like_toggle, name="lesson_like"),
-    path("subscribe-toggle/", views.subscribe_toggle, name="subscribe_toggle"),
-    path("announcements/<int:pk>/send/", views.announcement_send_view, name="announcement_send"),  # optional
-
-    # API (under /api/)
-    path("api/", include(router.urls)),
+    # API endpoints
+    path('api/', include(router.urls)),
+    
+    # Custom API actions
+    path('api/user/dashboard/', views.UserDashboardAPIView.as_view(), name='user-dashboard'),
+    path('api/user/journey-progress/', views.UserJourneyProgressAPIView.as_view(), name='user-journey-progress'),
+    path('api/mission/heatmap-data/', views.MissionHeatmapDataAPIView.as_view(), name='mission-heatmap-data'),
+    path('api/global/stats/', views.GlobalStatsAPIView.as_view(), name='global-stats'),
 ]

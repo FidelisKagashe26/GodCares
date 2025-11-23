@@ -1,356 +1,548 @@
 # content/views.py
-from __future__ import annotations
-
-import datetime, re, secrets
-from typing import Optional
-
-from django.conf import settings
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login
-from django.contrib.sites.shortcuts import get_current_site
-from django.core.paginator import Paginator
-from django.db import transaction
-from django.db.models import Q, Prefetch
-from django.http import (
-    HttpRequest, HttpResponse, HttpResponseBadRequest, HttpResponseForbidden
-)
-from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
+from rest_framework import viewsets, status, permissions
+from rest_framework.decorators import action
+from django.db.models import Sum
+from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
+from django.db.models import Q, Count, Prefetch
 from django.utils import timezone
 
-from .forms import PrayerRequestForm, SignUpForm, LessonCommentForm
 from .models import (
-    Announcement, Category, Event, Lesson, LessonComment, LessonLike,
-    MediaItem, Post, PrayerRequest, Profile, Season, Series
+    Category, Post, Season, Series, Lesson, Event, MediaItem, PrayerRequest,
+    LessonLike, LessonComment, Announcement, Profile, SiteSetting,
+    DiscipleshipJourney, StageProgress, MissionReport, BibleStudyGroup,
+    BaptismRecord, MissionMapLocation, Certificate, GlobalSoulsCounter
 )
-from .utils.emailing import send_html_email
+from .serializers import (
+    CategorySerializer, PostListSerializer, PostDetailSerializer,
+    SeriesSerializer, SeasonSerializer, LessonListSerializer, LessonDetailSerializer,
+    EventSerializer, MediaItemSerializer, PrayerRequestSerializer,
+    LessonCommentSerializer, LessonLikeSerializer, AnnouncementSerializer,
+    ProfileSerializer, SiteSettingSerializer, DiscipleshipJourneySerializer,
+    StageProgressSerializer, MissionReportSerializer, BibleStudyGroupSerializer,
+    BaptismRecordSerializer, MissionMapLocationSerializer, CertificateSerializer,
+    GlobalSoulsCounterSerializer
+)
+from .permissions import AdminOrReadOnly
 
-# ------------ Settings/consts -------------
-EMAIL_VERIFY_TTL = getattr(settings, "EMAIL_VERIFICATION_TIMEOUT", 60 * 30)  # 30min
+# ==================== CONTENT VIEWSETS ====================
 
-# ------------ Helpers -------------
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all().order_by('name')
+    serializer_class = CategorySerializer
+    permission_classes = [AdminOrReadOnly]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['slug', 'name']
+    search_fields = ['name', 'description']
+    ordering_fields = ['name', 'created_at']
+    ordering = ['name']
 
-def _paginate(request: HttpRequest, qs, per_page: int = 10):
-    paginator = Paginator(qs, per_page)
-    return paginator.get_page(request.GET.get("page") or 1)
+class PostViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.select_related('category', 'author').all()
+    permission_classes = [AdminOrReadOnly]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['status', 'featured', 'category', 'author']
+    search_fields = ['title', 'content', 'excerpt']
+    ordering_fields = ['created_at', 'published_at', 'views', 'title']
+    ordering = ['-created_at']
 
-def _extract_youtube_id(url: str) -> Optional[str]:
-    if not url:
-        return None
-    m = re.match(r"^https?://youtu\.be/([A-Za-z0-9_-]{6,})", url)
-    if m: return m.group(1)
-    m = re.search(r"[?&]v=([A-Za-z0-9_-]{6,})", url)
-    if m: return m.group(1)
-    m = re.search(r"/embed/([A-Za-z0-9_-]{6,})", url)
-    if m: return m.group(1)
-    return None
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        # For non-staff users, only show published posts
+        if not self.request.user.is_staff:
+            queryset = queryset.filter(status='published')
+        return queryset
 
-def _referer_or(request: HttpRequest, default: str) -> str:
-    return request.META.get("HTTP_REFERER") or default
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return PostDetailSerializer
+        return PostListSerializer
 
-def _issue_token_if_needed(profile: Profile) -> bool:
-    """Toa token mpya tu kama haipo au ime-expire; rudi True kama umetengeneza mpya."""
-    now = timezone.now()
-    if profile.email_verification_token and profile.token_created_at:
-        if now - profile.token_created_at < datetime.timedelta(seconds=EMAIL_VERIFY_TTL):
-            return False
-    profile.email_verification_token = secrets.token_urlsafe(32)
-    profile.token_created_at = now
-    profile.save(update_fields=["email_verification_token", "token_created_at"])
-    return True
+    @action(detail=True, methods=['post'])
+    def increment_views(self, request, pk=None):
+        post = self.get_object()
+        post.views += 1
+        post.save()
+        return Response({'views': post.views})
 
-def _queue_verification_email(request: HttpRequest, user) -> None:
-    site = get_current_site(request)
-    verify_url = request.build_absolute_uri(
-        reverse("content:verify_email") + f"?token={user.profile.email_verification_token}"
-    )
-    ctx = {
-        "user": user,
-        "site_name": site.name or "GOD CARES 365",
-        "domain": site.domain,
-        "verify_url": verify_url,
-        "ttl_minutes": int(EMAIL_VERIFY_TTL / 60),
-    }
-    # tuma baada ya transaction ku-commit (epuka duplicates)
-    transaction.on_commit(lambda: send_html_email(
-        subject="Thibitisha barua pepe yako",
-        to_email=user.email,
-        template_name="emails/verify_email.html",
-        context=ctx,
-    ))
+class SeasonViewSet(viewsets.ModelViewSet):
+    queryset = Season.objects.prefetch_related('series').all()
+    serializer_class = SeasonSerializer
+    permission_classes = [AdminOrReadOnly]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['is_active', 'slug']
+    search_fields = ['name', 'description']
+    ordering_fields = ['order', 'start_date', 'created_at']
+    ordering = ['order']
 
-# ------------ Public pages -------------
+class SeriesViewSet(viewsets.ModelViewSet):
+    queryset = Series.objects.select_related('season').prefetch_related('lessons').all()
+    serializer_class = SeriesSerializer
+    permission_classes = [AdminOrReadOnly]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['season', 'slug']
+    search_fields = ['name', 'description']
+    ordering_fields = ['order', 'created_at']
+    ordering = ['season', 'order']
 
-def home(request: HttpRequest) -> HttpResponse:
-    featured_posts = (
-        Post.objects.filter(status="published", featured=True)
-        .select_related("category", "author")
-        .order_by("-published_at", "-created_at")[:3]
-    )
-    upcoming_events = Event.objects.filter(date__gte=timezone.now()).order_by("date")[:3]
-    return render(request, "home.html", {
-        "featured_posts": featured_posts,
-        "upcoming_events": upcoming_events,
-        "current_year": timezone.now().year,
-    })
+class LessonViewSet(viewsets.ModelViewSet):
+    queryset = Lesson.objects.select_related('series', 'series__season').all()
+    permission_classes = [AdminOrReadOnly]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['series', 'status', 'series__season']
+    search_fields = ['title', 'description', 'content', 'bible_references']
+    ordering_fields = ['order', 'created_at', 'views', 'published_at']
+    ordering = ['series', 'order']
 
-def about(request: HttpRequest) -> HttpResponse:
-    return render(request, "about.html")
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        # For non-staff users, only show published lessons
+        if not self.request.user.is_staff:
+            queryset = queryset.filter(status='published')
+        return queryset
 
-def news(request: HttpRequest) -> HttpResponse:
-    posts = (Post.objects.filter(status="published")
-             .select_related("category", "author")
-             .order_by("-published_at", "-created_at"))
-    categories = Category.objects.all().order_by("name")
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return LessonDetailSerializer
+        return LessonListSerializer
 
-    q = (request.GET.get("search") or "").strip()
-    if q:
-        posts = posts.filter(Q(title__icontains=q) | Q(content__icontains=q) | Q(excerpt__icontains=q))
+    @action(detail=True, methods=['post'])
+    def increment_views(self, request, pk=None):
+        lesson = self.get_object()
+        lesson.views += 1
+        lesson.save()
+        return Response({'views': lesson.views})
 
-    cat = (request.GET.get("category") or "").strip()
-    if cat and cat != "all":
-        posts = posts.filter(category__slug=cat)
-
-    page_obj = _paginate(request, posts, per_page=6)
-    return render(request, "news/list.html", {
-        "page_obj": page_obj, "categories": categories, "search_query": q, "category_filter": cat,
-    })
-
-def news_detail(request: HttpRequest, slug: str) -> HttpResponse:
-    post = get_object_or_404(Post.objects.select_related("category", "author"), slug=slug, status="published")
-    Post.objects.filter(pk=post.pk).update(views=post.views + 1)
-    post.refresh_from_db(fields=["views"])
-    related_posts = (Post.objects.filter(category=post.category, status="published")
-                     .exclude(pk=post.pk).order_by("-published_at", "-created_at")[:3])
-    return render(request, "news/detail.html", {"post": post, "related_posts": related_posts})
-
-def bible_studies(request: HttpRequest) -> HttpResponse:
-    published_lessons_qs = Lesson.objects.filter(status="published").only("id", "slug", "title", "order", "status", "series_id")
-    seasons = (Season.objects.filter(is_active=True)
-               .prefetch_related(Prefetch("series__lessons", queryset=published_lessons_qs))
-               .order_by("order", "-created_at"))
-
-    lessons = (Lesson.objects.filter(status="published")
-               .select_related("series", "series__season")
-               .order_by("series__season__order", "series__order", "order", "-created_at"))
-
-    q = (request.GET.get("search") or "").strip()
-    if q:
-        lessons = lessons.filter(Q(title__icontains=q) | Q(description__icontains=q) | Q(bible_references__icontains=q))
-
-    s = (request.GET.get("season") or "").strip()
-    if s and s != "all":
-        lessons = lessons.filter(series__season__slug=s)
-
-    lessons_page = _paginate(request, lessons, per_page=9)
-    return render(request, "bible_studies/list.html", {
-        "seasons": seasons, "lessons_page": lessons_page, "search_query": q, "season_filter": s,
-    })
-
-def events(request: HttpRequest) -> HttpResponse:
-    all_events = Event.objects.all().order_by("date")
-    now = timezone.now()
-    f = (request.GET.get("filter") or "all").strip()
-    if f == "upcoming":
-        ev = all_events.filter(date__gte=now)
-    elif f == "featured":
-        ev = all_events.filter(is_featured=True)
-    elif f == "past":
-        ev = all_events.filter(date__lt=now)
-    else:
-        ev = all_events
-    page_obj = _paginate(request, ev, per_page=6)
-    return render(request, "events/list.html", {"page_obj": page_obj, "event_filter": f})
-
-def event_detail(request: HttpRequest, slug: str) -> HttpResponse:
-    event = get_object_or_404(Event, slug=slug)
-    return render(request, "events/detail.html", {"event": event})
-
-def prayer_requests(request: HttpRequest) -> HttpResponse:
-    if request.method == "POST":
-        form = PrayerRequestForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Ombi lako limepokewa! Timu yetu itaomba kwa ajili yako.")
-            return redirect("prayer_requests")
-    else:
-        form = PrayerRequestForm()
-    return render(request, "prayer_requests.html", {"form": form})
-
-def donations(request: HttpRequest) -> HttpResponse:
-    return render(request, "donations.html")
-
-# ------------ Lessons: detail/like/comment ------------
-
-def lesson_detail(request: HttpRequest, slug: str) -> HttpResponse:
-    lesson = get_object_or_404(Lesson.objects.select_related("series", "series__season"), slug=slug, status="published")
-    Lesson.objects.filter(pk=lesson.pk).update(views=lesson.views + 1)
-    lesson.refresh_from_db(fields=["views"])
-
-    related_lessons = (Lesson.objects.filter(series=lesson.series, status="published")
-                       .exclude(pk=lesson.pk).only("id", "slug", "title", "order").order_by("order")[:5])
-
-    user_has_liked = request.user.is_authenticated and LessonLike.objects.filter(user=request.user, lesson=lesson).exists()
-
-    comments = (lesson.lesson_comments.filter(is_approved=True).select_related("user").order_by("-created_at"))
-
-    comment_form = LessonCommentForm()
-    if request.method == "POST":
-        if not request.user.is_authenticated:
-            messages.error(request, "Tafadhali ingia kwanza ili uache maoni.")
-            return redirect(f"{reverse('login')}?next={request.path}")
-        key = f"last_comment_ts_{lesson.pk}"
-        last = request.session.get(key)
-        now_ts = int(timezone.now().timestamp())
-        if last and (now_ts - int(last) < 15):
-            messages.warning(request, "Umekuwa ukituma maoni haraka sana. Jaribu tena baada ya muda mfupi.")
-            return redirect("content:lesson_detail", slug=slug)
-        comment_form = LessonCommentForm(request.POST)
-        if comment_form.is_valid():
-            c = comment_form.save(commit=False)
-            c.user = request.user
-            c.lesson = lesson
-            c.save()
-            request.session[key] = now_ts
-            messages.success(request, "Maoni yako yamehifadhiwa.")
-            return redirect("content:lesson_detail", slug=slug)
-
-    youtube_id = _extract_youtube_id(lesson.video_url) if lesson.video_url else None
-    embed_url = f"https://www.youtube.com/embed/{youtube_id}" if youtube_id else None
-
-    return render(request, "bible_studies/detail.html", {
-        "lesson": lesson,
-        "related_lessons": related_lessons,
-        "user_has_liked": user_has_liked,
-        "comment_form": comment_form,
-        "comments": comments,
-        "youtube_id": youtube_id,
-        "embed_url": embed_url,
-    })
-
-@login_required
-def lesson_like_toggle(request: HttpRequest, slug: str) -> HttpResponse:
-    if request.method != "POST":
-        return HttpResponseBadRequest("Invalid method")
-    lesson = get_object_or_404(Lesson, slug=slug, status="published")
-    like, created = LessonLike.objects.get_or_create(user=request.user, lesson=lesson)
-    if not created:
-        like.delete()
-        messages.info(request, "Umeondoa like yako.")
-    else:
-        messages.success(request, "Asante kwa kupenda somo hili!")
-    return redirect("content:lesson_detail", slug=slug)
-
-# ------------ Accounts: signup/verify/resend/subscribe/announce ------------
-
-def signup_view(request: HttpRequest) -> HttpResponse:
-    if request.method == "POST":
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            with transaction.atomic():
-                user = form.save(commit=False)
-                user.is_active = False  # subiri athibitishe email
-                user.save()
-
-                # hakikisha profile ipo kabla ya kuitumia
-                profile, _ = Profile.objects.get_or_create(user=user, defaults={})
-                profile.email_verified = False
-                profile.save(update_fields=["email_verified"])
-
-                if _issue_token_if_needed(profile):
-                    _queue_verification_email(request, user)
-
-            messages.success(
-                request,
-                f"Akaunti imeundwa. Tume-tuma kiungo cha kuthibitisha (muda wake: dakika {int(EMAIL_VERIFY_TTL/60)})."
-            )
-            return redirect("login")
-    else:
-        form = SignUpForm()
-    return render(request, "registration/signup.html", {"form": form})
-
-def verify_email_view(request: HttpRequest) -> HttpResponse:
-    token = request.GET.get("token")
-    if not token:
-        return HttpResponseBadRequest("Missing token.")
-
-    with transaction.atomic():
-        try:
-            profile = (Profile.objects.select_for_update()
-                       .select_related("user")
-                       .get(email_verification_token=token))
-        except Profile.DoesNotExist:
-            messages.error(request, "Kiungo si sahihi au kilishatumika.")
-            return redirect("login")
-
-        # TTL
-        if (not profile.token_created_at) or (
-            timezone.now() - profile.token_created_at > datetime.timedelta(seconds=EMAIL_VERIFY_TTL)
-        ):
-            messages.error(request, "Kiungo cha uthibitisho kimeisha muda. Tafadhali omba kipya.")
-            return redirect("login")
-
-        profile.email_verified = True
-        profile.email_verification_token = ""
-        profile.token_created_at = None
-        profile.save(update_fields=["email_verified", "email_verification_token", "token_created_at"])
-
-        user = profile.user
-        if not user.is_active:
-            user.is_active = True
-            user.save(update_fields=["is_active"])
-
-    messages.success(request, "Barua pepe imethibitishwa. Tafadhali ingia kuendelea.")
-    return redirect("login")
-
-@login_required
-def resend_verification_view(request: HttpRequest) -> HttpResponse:
-    profile = request.user.profile
-    if profile.email_verified:
-        messages.info(request, "Akaunti yako tayari imethibitishwa.")
-        return redirect("home")
-    with transaction.atomic():
-        if _issue_token_if_needed(profile):
-            _queue_verification_email(request, request.user)
-    messages.success(request, "Kiungo kipya cha uthibitisho kimetumwa kwenye barua pepe yako.")
-    return redirect("home")
-
-@login_required
-def subscribe_toggle(request: HttpRequest) -> HttpResponse:
-    if request.method != "POST":
-        return HttpResponseBadRequest("Invalid method")
-    prof, _ = Profile.objects.get_or_create(user=request.user, defaults={"receive_notifications": True})
-    prof.receive_notifications = not prof.receive_notifications
-    prof.save(update_fields=["receive_notifications"])
-    if prof.receive_notifications:
-        messages.success(request, "Umejiunga na arifa za masomo mapya.")
-    else:
-        messages.info(request, "Umejiondoa kwenye arifa za masomo mapya.")
-    return redirect(_referer_or(request, reverse("home")))
-
-@login_required
-def announcement_send_view(request: HttpRequest, pk: int) -> HttpResponse:
-    if not request.user.is_staff:
-        return HttpResponseForbidden("Forbidden")
-    ann = get_object_or_404(Announcement, pk=pk)
-
-    from django.contrib.auth.models import User
-    users = User.objects.filter(profile__receive_notifications=True).select_related("profile")
-
-    total = 0
-    for u in users:
-        send_html_email(
-            subject=ann.title,
-            to_email=u.email,
-            template_name="emails/announcement.html",
-            context={"user": u, "body": ann.body, "title": ann.title, "site_name": "GOD CARES 365"},
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def toggle_like(self, request, pk=None):
+        lesson = self.get_object()
+        like, created = LessonLike.objects.get_or_create(
+            user=request.user, 
+            lesson=lesson
         )
-        total += 1
+        
+        if not created:
+            like.delete()
+            return Response({'status': 'unliked', 'liked': False})
+        
+        return Response({'status': 'liked', 'liked': True})
 
-    ann.sent_at = timezone.now()
-    ann.sent_by = request.user
-    ann.save(update_fields=["sent_at", "sent_by"])
+    @action(detail=True, methods=['get'])
+    def comments(self, request, pk=None):
+        lesson = self.get_object()
+        comments = lesson.lesson_comments.filter(is_approved=True).select_related('user')
+        serializer = LessonCommentSerializer(comments, many=True)
+        return Response(serializer.data)
 
-    messages.success(request, f"Ujumbe umetumwa kwa waliosajiliwa kupokea taarifa ({total}).")
-    return redirect("admin:index")
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def add_comment(self, request, pk=None):
+        lesson = self.get_object()
+        serializer = LessonCommentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user, lesson=lesson)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class EventViewSet(viewsets.ModelViewSet):
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
+    permission_classes = [AdminOrReadOnly]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['is_featured']
+    search_fields = ['title', 'description', 'location']
+    ordering_fields = ['date', 'created_at']
+    ordering = ['date']
+
+    @action(detail=False)
+    def upcoming(self, request):
+        upcoming_events = self.get_queryset().filter(date__gte=timezone.now())
+        serializer = self.get_serializer(upcoming_events, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False)
+    def past(self, request):
+        past_events = self.get_queryset().filter(date__lt=timezone.now())
+        serializer = self.get_serializer(past_events, many=True)
+        return Response(serializer.data)
+
+class MediaItemViewSet(viewsets.ModelViewSet):
+    queryset = MediaItem.objects.select_related('category').all()
+    serializer_class = MediaItemSerializer
+    permission_classes = [AdminOrReadOnly]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['media_type', 'category']
+    search_fields = ['title', 'description', 'tags']
+    ordering_fields = ['created_at', 'views']
+    ordering = ['-created_at']
+
+    @action(detail=True, methods=['post'])
+    def increment_views(self, request, pk=None):
+        media_item = self.get_object()
+        media_item.views += 1
+        media_item.save()
+        return Response({'views': media_item.views})
+
+class PrayerRequestViewSet(viewsets.ModelViewSet):
+    queryset = PrayerRequest.objects.all()
+    serializer_class = PrayerRequestSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['category', 'is_anonymous', 'is_urgent', 'is_answered']
+    search_fields = ['request', 'name']
+    ordering_fields = ['created_at', 'is_urgent']
+    ordering = ['-is_urgent', '-created_at']
+
+    def get_permissions(self):
+        if self.action in ['update', 'partial_update', 'destroy']:
+            return [AdminOrReadOnly()]
+        return [permissions.AllowAny()]
+
+    def perform_create(self, serializer):
+        if serializer.validated_data.get('is_anonymous'):
+            serializer.save(name='', email='', phone='')
+        else:
+            serializer.save()
+
+class LessonCommentViewSet(viewsets.ModelViewSet):
+    queryset = LessonComment.objects.select_related('user', 'lesson').all()
+    serializer_class = LessonCommentSerializer
+    permission_classes = [AdminOrReadOnly]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['lesson', 'user', 'is_approved']
+    search_fields = ['body']
+    ordering_fields = ['created_at']
+    ordering = ['-created_at']
+
+class LessonLikeViewSet(viewsets.ModelViewSet):
+    queryset = LessonLike.objects.select_related('user', 'lesson').all()
+    serializer_class = LessonLikeSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_fields = ['lesson']
+    ordering_fields = ['created_at']
+    ordering = ['-created_at']
+
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user)
+
+class AnnouncementViewSet(viewsets.ModelViewSet):
+    queryset = Announcement.objects.select_related('sent_by').all()
+    serializer_class = AnnouncementSerializer
+    permission_classes = [AdminOrReadOnly]
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = ['title', 'body']
+    ordering_fields = ['created_at', 'sent_at']
+    ordering = ['-created_at']
+
+class ProfileViewSet(viewsets.ModelViewSet):
+    queryset = Profile.objects.select_related('user').all()
+    serializer_class = ProfileSerializer
+    permission_classes = [AdminOrReadOnly]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['email_verified', 'receive_notifications']
+    search_fields = ['user__username', 'user__email', 'phone_number']
+    ordering_fields = ['created_at']
+    ordering = ['-created_at']
+
+class SiteSettingViewSet(viewsets.ModelViewSet):
+    queryset = SiteSetting.objects.all()
+    serializer_class = SiteSettingSerializer
+    permission_classes = [AdminOrReadOnly]
+
+    def get_queryset(self):
+        # Ensure only one settings object exists
+        return SiteSetting.objects.filter(pk=1)
+
+# ==================== MISSION PLATFORM VIEWSETS ====================
+
+class DiscipleshipJourneyViewSet(viewsets.ModelViewSet):
+    serializer_class = DiscipleshipJourneySerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_fields = ['current_stage', 'seeker_completed', 'scholar_completed', 'missionary_completed']
+    ordering_fields = ['started_date', 'completed_date']
+    ordering = ['started_date']
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return DiscipleshipJourney.objects.select_related('user').all()
+        return DiscipleshipJourney.objects.select_related('user').filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    @action(detail=True, methods=['post'])
+    def advance_stage(self, request, pk=None):
+        journey = self.get_object()
+        current_stage = journey.current_stage
+        
+        stage_mapping = {
+            'seeker': 'scholar',
+            'scholar': 'missionary',
+            'missionary': 'missionary'  # Final stage
+        }
+        
+        if current_stage in stage_mapping:
+            journey.current_stage = stage_mapping[current_stage]
+            
+            # Mark current stage as completed
+            if current_stage == 'seeker':
+                journey.seeker_completed = True
+            elif current_stage == 'scholar':
+                journey.scholar_completed = True
+            elif current_stage == 'missionary':
+                journey.missionary_completed = True
+                journey.completed_date = timezone.now()
+            
+            journey.save()
+            return Response({'status': 'stage advanced', 'new_stage': journey.current_stage})
+        
+        return Response({'error': 'Cannot advance from current stage'}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['post'])
+    def update_progress(self, request, pk=None):
+        journey = self.get_object()
+        progress = request.data.get('progress', 0)
+        
+        if 0 <= progress <= 100:
+            journey.progress_percentage = progress
+            journey.save()
+            return Response({'progress': journey.progress_percentage})
+        
+        return Response({'error': 'Progress must be between 0 and 100'}, status=status.HTTP_400_BAD_REQUEST)
+
+class StageProgressViewSet(viewsets.ModelViewSet):
+    serializer_class = StageProgressSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_fields = ['journey', 'stage', 'completed', 'lesson']
+    ordering_fields = ['completed_date']
+    ordering = ['lesson__order']
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return StageProgress.objects.select_related('journey', 'lesson').all()
+        return StageProgress.objects.select_related('journey', 'lesson').filter(journey__user=self.request.user)
+
+    @action(detail=True, methods=['post'])
+    def mark_completed(self, request, pk=None):
+        stage_progress = self.get_object()
+        stage_progress.completed = True
+        stage_progress.completed_date = timezone.now()
+        stage_progress.score = request.data.get('score', 100)
+        stage_progress.notes = request.data.get('notes', '')
+        stage_progress.save()
+        
+        return Response({'status': 'completed', 'score': stage_progress.score})
+
+class MissionReportViewSet(viewsets.ModelViewSet):
+    serializer_class = MissionReportSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['missionary', 'location', 'is_verified']
+    search_fields = ['title', 'location', 'testimonies', 'challenges']
+    ordering_fields = ['date_conducted', 'created_at']
+    ordering = ['-date_conducted']
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return MissionReport.objects.select_related('missionary', 'verified_by').all()
+        return MissionReport.objects.select_related('missionary', 'verified_by').filter(missionary=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(missionary=self.request.user)
+
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAdminUser])
+    def verify(self, request, pk=None):
+        mission_report = self.get_object()
+        mission_report.is_verified = True
+        mission_report.verified_by = request.user
+        mission_report.verified_at = timezone.now()
+        mission_report.save()
+        
+        # Update global souls counter
+        global_counter, _ = GlobalSoulsCounter.objects.get_or_create(pk=1)
+        global_counter.total_souls_reached += mission_report.souls_reached
+        global_counter.total_baptisms += mission_report.baptisms_performed
+        global_counter.total_mission_reports += 1
+        global_counter.save()
+        
+        return Response({'status': 'verified'})
+
+    @action(detail=False)
+    def stats(self, request):
+        user_reports = self.get_queryset().filter(missionary=request.user)
+        total_souls = user_reports.aggregate(Sum('souls_reached'))['souls_reached__sum'] or 0
+        total_baptisms = user_reports.aggregate(Sum('baptisms_performed'))['baptisms_performed__sum'] or 0
+        total_reports = user_reports.count()
+        
+        return Response({
+            'total_souls_reached': total_souls,
+            'total_baptisms': total_baptisms,
+            'total_reports': total_reports
+        })
+
+class BibleStudyGroupViewSet(viewsets.ModelViewSet):
+    serializer_class = BibleStudyGroupSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['leader', 'is_active', 'meeting_frequency']
+    search_fields = ['group_name', 'description', 'location']
+    ordering_fields = ['created_at', 'current_members_count']
+    ordering = ['-created_at']
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return BibleStudyGroup.objects.select_related('leader', 'current_lesson').prefetch_related('members').all()
+        
+        # Return groups where user is leader or member
+        return BibleStudyGroup.objects.select_related('leader', 'current_lesson').prefetch_related('members').filter(
+            Q(leader=self.request.user) | Q(members=self.request.user)
+        ).distinct()
+
+    def perform_create(self, serializer):
+        group = serializer.save(leader=self.request.user, current_members_count=1)
+        group.members.add(self.request.user)
+
+    @action(detail=True, methods=['post'])
+    def join(self, request, pk=None):
+        group = self.get_object()
+        if group.members.count() < group.max_members:
+            group.members.add(request.user)
+            group.current_members_count = group.members.count() + 1  # +1 for leader
+            group.save()
+            return Response({'status': 'joined group'})
+        return Response({'error': 'Group is full'}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['post'])
+    def leave(self, request, pk=None):
+        group = self.get_object()
+        if request.user != group.leader:  # Leader cannot leave, must transfer leadership or delete group
+            group.members.remove(request.user)
+            group.current_members_count = group.members.count() + 1  # +1 for leader
+            group.save()
+            return Response({'status': 'left group'})
+        return Response({'error': 'Leader cannot leave group'}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['post'])
+    def complete_lesson(self, request, pk=None):
+        group = self.get_object()
+        lesson_id = request.data.get('lesson_id')
+        
+        try:
+            lesson = Lesson.objects.get(id=lesson_id)
+            group.lessons_completed.add(lesson)
+            return Response({'status': 'lesson completed'})
+        except Lesson.DoesNotExist:
+            return Response({'error': 'Lesson not found'}, status=status.HTTP_404_NOT_FOUND)
+
+class BaptismRecordViewSet(viewsets.ModelViewSet):
+    serializer_class = BaptismRecordSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['missionary', 'baptism_date']
+    search_fields = ['candidate_name', 'location']
+    ordering_fields = ['baptism_date', 'created_at']
+    ordering = ['-baptism_date']
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return BaptismRecord.objects.select_related('missionary').all()
+        return BaptismRecord.objects.select_related('missionary').filter(missionary=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(missionary=self.request.user)
+
+    @action(detail=True, methods=['post'])
+    def mark_follow_up_completed(self, request, pk=None):
+        baptism_record = self.get_object()
+        baptism_record.follow_up_completed = True
+        baptism_record.save()
+        return Response({'status': 'follow up completed'})
+
+class MissionMapLocationViewSet(viewsets.ModelViewSet):
+    serializer_class = MissionMapLocationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_fields = ['missionary', 'visit_type']
+    ordering_fields = ['date_visited', 'created_at']
+    ordering = ['-date_visited']
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return MissionMapLocation.objects.select_related('missionary').all()
+        return MissionMapLocation.objects.select_related('missionary').filter(missionary=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(missionary=self.request.user)
+
+    @action(detail=False)
+    def heatmap_data(self, request):
+        locations = self.get_queryset()
+        heatmap_data = []
+        
+        for location in locations:
+            heatmap_data.append({
+                'lat': location.gps_coordinates.get('lat'),
+                'lng': location.gps_coordinates.get('lng'),
+                'weight': location.souls_contacted,
+                'location_name': location.location_name,
+                'visit_type': location.visit_type,
+                'date': location.date_visited
+            })
+        
+        return Response(heatmap_data)
+
+class CertificateViewSet(viewsets.ModelViewSet):
+    serializer_class = CertificateSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_fields = ['user', 'certificate_type', 'verified']
+    ordering_fields = ['issued_date', 'created_at']
+    ordering = ['-issued_date']
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Certificate.objects.select_related('user', 'issued_by').all()
+        return Certificate.objects.select_related('user', 'issued_by').filter(user=self.request.user)
+
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAdminUser])
+    def issue_certificate(self, request, pk=None):
+        certificate = self.get_object()
+        certificate.verified = True
+        certificate.issued_by = request.user
+        certificate.issued_date = timezone.now()
+        certificate.save()
+        
+        return Response({'status': 'certificate issued'})
+
+class GlobalSoulsCounterViewSet(viewsets.ModelViewSet):
+    queryset = GlobalSoulsCounter.objects.all()
+    serializer_class = GlobalSoulsCounterSerializer
+    permission_classes = [AdminOrReadOnly]
+
+    def get_queryset(self):
+        return GlobalSoulsCounter.objects.filter(pk=1)
+
+    @action(detail=False)
+    def dashboard_stats(self, request):
+        global_counter = self.get_queryset().first()
+        if not global_counter:
+            global_counter = GlobalSoulsCounter.objects.create(pk=1)
+        
+        # Additional stats
+        active_missionaries = DiscipleshipJourney.objects.filter(
+            current_stage='missionary'
+        ).count()
+        
+        active_groups = BibleStudyGroup.objects.filter(is_active=True).count()
+        
+        return Response({
+            'total_souls_reached': global_counter.total_souls_reached,
+            'total_baptisms': global_counter.total_baptisms,
+            'total_mission_reports': global_counter.total_mission_reports,
+            'total_bible_study_groups': global_counter.total_bible_study_groups,
+            'active_missionaries': active_missionaries,
+            'active_groups': active_groups,
+            'last_updated': global_counter.last_updated
+        })

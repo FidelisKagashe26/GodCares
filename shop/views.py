@@ -1,154 +1,99 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from django.db.models import Q
-from django.core.paginator import Paginator
-from django.contrib import messages
-from .models import Product, Category, Order, OrderItem
-from .forms import AddToCartForm, CheckoutForm
+# shop/views.py
+from rest_framework import viewsets, permissions
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
 
-def _cart(request):
-    return request.session.setdefault("cart", {})
+from .models import Category, Product, Order
+from .serializers import (
+    CategorySerializer,
+    ProductListSerializer,
+    ProductDetailSerializer,
+    OrderSerializer,
+)
+from content.permissions import AdminOrReadOnly  # tayari upo kwenye content app
 
-def _cart_key(pid, size, color):
-    size = (size or "").strip()
-    color = (color or "").strip()
-    return f"{pid}:{size}:{color}"
 
-def shop_list(request):
-    qs = Product.objects.filter(is_published=True)
-    categories = Category.objects.all().order_by("name")
+class CategoryViewSet(viewsets.ModelViewSet):
+    """
+    CRUD ya Category:
+    - Public: GET (list, retrieve)
+    - Admin: POST/PUT/PATCH/DELETE
+    """
+    queryset = Category.objects.all().order_by("name")
+    serializer_class = CategorySerializer
+    permission_classes = [AdminOrReadOnly]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ["slug", "name"]
+    search_fields = ["name"]
+    ordering_fields = ["name"]
+    ordering = ["name"]
 
-    q = request.GET.get("q", "").strip()
-    cat = request.GET.get("cat", "").strip()
-    if q:
-        qs = qs.filter(Q(title__icontains=q) | Q(description__icontains=q))
-    if cat:
-        qs = qs.filter(category__slug=cat)
 
-    paginator = Paginator(qs, 12)
-    products = paginator.get_page(request.GET.get("page"))
+class ProductViewSet(viewsets.ModelViewSet):
+    """
+    Bidhaa + search + featured + related.
+    """
+    queryset = Product.objects.select_related("category").prefetch_related("gallery")
+    permission_classes = [AdminOrReadOnly]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ["category", "category__slug", "featured", "is_published"]
+    search_fields = ["title", "description"]
+    ordering_fields = ["created_at", "price", "title"]
+    ordering = ["-created_at"]
 
-    return render(request, "shop/list.html", {
-        "products": products, "categories": categories, "q": q, "cat": cat
-    })
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if not self.request.user.is_staff:
+            qs = qs.filter(is_published=True)
+        return qs
 
-def shop_detail(request, slug):
-    product = get_object_or_404(Product, slug=slug, is_published=True)
-    related = Product.objects.filter(is_published=True, category=product.category).exclude(pk=product.pk)[:8]
+    def get_serializer_class(self):
+        if self.action == "retrieve":
+            return ProductDetailSerializer
+        return ProductListSerializer
 
-    if request.method == "POST":
-        form = AddToCartForm(request.POST)
-        if form.is_valid():
-            qty = form.cleaned_data["quantity"]
-            size = form.cleaned_data.get("size") or ""
-            color = form.cleaned_data.get("color") or ""
-            if qty > product.inventory:
-                messages.error(request, "Samahani, kiasi kilichoombwa kinazidi stock.")
-            else:
-                cart = _cart(request)
-                key = _cart_key(product.id, size, color)
-                row = cart.get(key, {"qty": 0})
-                row["qty"] = int(row["qty"]) + int(qty)
-                row.update({
-                    "title": product.title,
-                    "slug": product.slug,
-                    "price": str(product.price),
-                    "image": product.image.url if product.image else "",
-                    "size": size, "color": color,
-                })
-                cart[key] = row
-                request.session.modified = True
-                messages.success(request, "Imeongezwa kwenye kikapu.")
-                return redirect("shop:cart")
-    else:
-        form = AddToCartForm()
+    @action(detail=False, methods=["get"])
+    def featured(self, request):
+        """
+        GET /products/featured/
+        → Orodha ya bidhaa zenye featured=True
+        """
+        qs = self.get_queryset().filter(featured=True)
+        serializer = self.get_serializer(qs, many=True)
+        return Response(serializer.data)
 
-    # toa chaguo la sizes & colors kama list
-    sizes = [s.strip() for s in product.sizes.split(",") if s.strip()]
-    colors = [c.strip() for c in product.colors.split(",") if c.strip()]
+    @action(detail=True, methods=["get"])
+    def related(self, request, pk=None):
+        """
+        GET /products/<id>/related/
+        → Bidhaa zinazofanana (category moja)
+        """
+        product = self.get_object()
+        qs = (
+            self.get_queryset()
+            .filter(category=product.category)
+            .exclude(pk=product.pk)[:8]
+        )
+        serializer = self.get_serializer(qs, many=True)
+        return Response(serializer.data)
 
-    return render(request, "shop/detail.html", {
-        "product": product, "related": related, "form": form,
-        "sizes": sizes, "colors": colors
-    })
 
-def cart_view(request):
-    cart = _cart(request)
-    items = []
-    total = 0
-    for key, row in cart.items():
-        qty = int(row["qty"])
-        price = float(row["price"])
-        line = qty * price
-        total += line
-        items.append({
-            "key": key, "title": row["title"], "slug": row["slug"],
-            "qty": qty, "price": price, "line": line,
-            "image": row.get("image", ""), "size": row.get("size", ""), "color": row.get("color", "")
-        })
-    return render(request, "shop/cart.html", {"items": items, "total": total})
+class OrderViewSet(viewsets.ModelViewSet):
+    """
+    Oda:
+    - create: AllowAny (customer aweke oda bila login)
+    - list/retrieve/update/delete: Admin pekee.
+    """
+    queryset = Order.objects.prefetch_related("items__product").all()
+    serializer_class = OrderSerializer
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_fields = ["status", "created_at"]
+    ordering_fields = ["created_at"]
+    ordering = ["-created_at"]
 
-def cart_update(request):
-    if request.method == "POST":
-        cart = _cart(request)
-        for key, qty in request.POST.items():
-            if key.startswith("qty__"):
-                k = key.split("__", 1)[1]
-                try:
-                    qv = max(0, int(qty))
-                except:
-                    qv = 1
-                if k in cart:
-                    if qv == 0:
-                        del cart[k]
-                    else:
-                        cart[k]["qty"] = qv
-        request.session.modified = True
-    return redirect("shop:cart")
-
-def cart_remove(request, key):
-    cart = _cart(request)
-    if key in cart:
-        del cart[key]
-        request.session.modified = True
-    return redirect("shop:cart")
-
-def checkout(request):
-    cart = _cart(request)
-    if not cart:
-        messages.info(request, "Kikapu chako kipo tupu.")
-        return redirect("shop:list")
-
-    if request.method == "POST":
-        form = CheckoutForm(request.POST)
-        if form.is_valid():
-            order = form.save()
-            # hifadhi vitu
-            for key, row in cart.items():
-                OrderItem.objects.create(
-                    order=order,
-                    product=Product.objects.get(pk=int(key.split(":")[0])),
-                    quantity=int(row["qty"]),
-                    unit_price=row["price"],
-                    size=row.get("size", ""), color=row.get("color", "")
-                )
-            # futa cart
-            request.session["cart"] = {}
-            request.session.modified = True
-            return redirect("shop:thank_you", order_id=order.id)
-    else:
-        form = CheckoutForm()
-
-    # hesabu total
-    items, total = [], 0
-    for key, row in cart.items():
-        qty = int(row["qty"])
-        price = float(row["price"])
-        line = qty * price
-        total += line
-        items.append({**row, "key": key, "qty": qty, "price": price, "line": line})
-
-    return render(request, "shop/checkout.html", {"form": form, "items": items, "total": total})
-
-def thank_you(request, order_id):
-    order = get_object_or_404(Order, pk=order_id)
-    return render(request, "shop/thank_you.html", {"order": order})
+    def get_permissions(self):
+        if self.action in ["create"]:
+            return [permissions.AllowAny()]
+        return [permissions.IsAdminUser()]
