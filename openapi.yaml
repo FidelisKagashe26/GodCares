@@ -1646,38 +1646,60 @@ paths:
   /api/v1/core/api/dashboard/stats/:
     get:
       operationId: v1_core_api_dashboard_stats_retrieve
-      description: API for dashboard statistics (per-user + global mission stats).
+      description: Returns per-user mission stats, global counters, recent missions
+        and discipleship journey snapshot.
+      summary: Get dashboard statistics for the authenticated user
       tags:
-      - v1
+      - Core
       security:
       - jwtAuth: []
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardStats'
+          description: ''
   /api/v1/core/api/mission-progress/:
     get:
       operationId: v1_core_api_mission_progress_retrieve
       description: API for mission progress tracking (monthly & yearly per missionary).
+      summary: Get mission progress (monthly & yearly) for authenticated missionary
       tags:
-      - v1
+      - Core
       security:
       - jwtAuth: []
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissionProgressResponse'
+          description: ''
   /api/v1/core/api/search/:
     get:
       operationId: v1_core_api_search_retrieve
-      description: Global search across gospel content (posts, lessons, events, mission
-        reports).
+      description: Search posts, lessons, events and mission reports using a simple
+        keyword query.
+      summary: Global search across gospel content
+      parameters:
+      - in: query
+        name: q
+        schema:
+          type: string
+        description: Search keyword
       tags:
-      - v1
+      - Core
       security:
       - jwtAuth: []
       - {}
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteSearchResponse'
+          description: ''
   /api/v1/core/api/system-settings/:
     get:
       operationId: v1_core_api_system_settings_list
@@ -1845,14 +1867,31 @@ paths:
   /api/v1/core/api/track-activity/:
     post:
       operationId: v1_core_api_track_activity_create
-      description: Track a single user activity event.
+      description: Records a user activity event for analytics and engagement tracking.
+      summary: Track a single user activity event
       tags:
-      - v1
+      - Core
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrackActivityRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TrackActivityRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TrackActivityRequestRequest'
+        required: true
       security:
       - jwtAuth: []
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrackActivityResponse'
+          description: ''
   /api/v1/core/api/user-activities/:
     get:
       operationId: v1_core_api_user_activities_list
@@ -2312,6 +2351,18 @@ paths:
         - Admin: anaona zote
         - User: anaona zake tu
       parameters:
+      - in: query
+        name: lesson
+        schema:
+          type: integer
+      - in: query
+        name: lesson__level
+        schema:
+          type: integer
+      - in: query
+        name: lesson__level__path
+        schema:
+          type: integer
       - name: ordering
         required: false
         in: query
@@ -2324,6 +2375,20 @@ paths:
         description: A page number within the paginated result set.
         schema:
           type: integer
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - completed
+          - in_progress
+          - not_started
+          - verified
+        description: |-
+          * `not_started` - Not Started
+          * `in_progress` - In Progress
+          * `completed` - Completed
+          * `verified` - Verified
       tags:
       - v1
       security:
@@ -2375,7 +2440,8 @@ paths:
       - in: path
         name: id
         schema:
-          type: string
+          type: integer
+        description: A unique integer value identifying this Lesson Progress.
         required: true
       tags:
       - v1
@@ -2398,7 +2464,8 @@ paths:
       - in: path
         name: id
         schema:
-          type: string
+          type: integer
+        description: A unique integer value identifying this Lesson Progress.
         required: true
       tags:
       - v1
@@ -2433,7 +2500,8 @@ paths:
       - in: path
         name: id
         schema:
-          type: string
+          type: integer
+        description: A unique integer value identifying this Lesson Progress.
         required: true
       tags:
       - v1
@@ -2467,7 +2535,8 @@ paths:
       - in: path
         name: id
         schema:
-          type: string
+          type: integer
+        description: A unique integer value identifying this Lesson Progress.
         required: true
       tags:
       - v1
@@ -2487,7 +2556,8 @@ paths:
       - in: path
         name: id
         schema:
-          type: string
+          type: integer
+        description: A unique integer value identifying this Lesson Progress.
         required: true
       tags:
       - v1
@@ -2956,8 +3026,12 @@ paths:
       description: |-
         Enrollment kwenye paths.
         - User anaona / anadhibiti za kwake
-        - Admin anaweza kuona zote
+        - Admin anaona zote
       parameters:
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
       - name: ordering
         required: false
         in: query
@@ -2968,6 +3042,10 @@ paths:
         required: false
         in: query
         description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: path
         schema:
           type: integer
       tags:
@@ -2986,7 +3064,7 @@ paths:
       description: |-
         Enrollment kwenye paths.
         - User anaona / anadhibiti za kwake
-        - Admin anaweza kuona zote
+        - Admin anaona zote
       tags:
       - v1
       requestBody:
@@ -3016,12 +3094,13 @@ paths:
       description: |-
         Enrollment kwenye paths.
         - User anaona / anadhibiti za kwake
-        - Admin anaweza kuona zote
+        - Admin anaona zote
       parameters:
       - in: path
         name: id
         schema:
-          type: string
+          type: integer
+        description: A unique integer value identifying this Path Enrollment.
         required: true
       tags:
       - v1
@@ -3039,12 +3118,13 @@ paths:
       description: |-
         Enrollment kwenye paths.
         - User anaona / anadhibiti za kwake
-        - Admin anaweza kuona zote
+        - Admin anaona zote
       parameters:
       - in: path
         name: id
         schema:
-          type: string
+          type: integer
+        description: A unique integer value identifying this Path Enrollment.
         required: true
       tags:
       - v1
@@ -3074,12 +3154,13 @@ paths:
       description: |-
         Enrollment kwenye paths.
         - User anaona / anadhibiti za kwake
-        - Admin anaweza kuona zote
+        - Admin anaona zote
       parameters:
       - in: path
         name: id
         schema:
-          type: string
+          type: integer
+        description: A unique integer value identifying this Path Enrollment.
         required: true
       tags:
       - v1
@@ -3108,12 +3189,13 @@ paths:
       description: |-
         Enrollment kwenye paths.
         - User anaona / anadhibiti za kwake
-        - Admin anaweza kuona zote
+        - Admin anaona zote
       parameters:
       - in: path
         name: id
         schema:
-          type: string
+          type: integer
+        description: A unique integer value identifying this Path Enrollment.
         required: true
       tags:
       - v1
@@ -3336,6 +3418,18 @@ paths:
         description: A page number within the paginated result set.
         schema:
           type: integer
+      - in: query
+        name: passed
+        schema:
+          type: boolean
+      - in: query
+        name: quiz
+        schema:
+          type: integer
+      - in: query
+        name: quiz__lesson
+        schema:
+          type: integer
       tags:
       - v1
       security:
@@ -3358,7 +3452,8 @@ paths:
       - in: path
         name: id
         schema:
-          type: string
+          type: integer
+        description: A unique integer value identifying this Quiz Attempt.
         required: true
       tags:
       - v1
@@ -3560,6 +3655,7 @@ paths:
       operationId: v1_discipleship_api_quizzes_submit_create
       description: |-
         User anatuma majibu ya quiz.
+
         Body inatarajiwa:
         {
           "answers": {
@@ -3606,6 +3702,10 @@ paths:
         - Staff: wanaona record zote.
         - User wa kawaida: anaona zake tu.
       parameters:
+      - in: query
+        name: lesson
+        schema:
+          type: integer
       - name: ordering
         required: false
         in: query
@@ -3618,6 +3718,18 @@ paths:
         description: A page number within the paginated result set.
         schema:
           type: integer
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - completed
+          - in_progress
+          - not_started
+        description: |-
+          * `not_started` - Not started
+          * `in_progress` - In progress
+          * `completed` - Completed
       tags:
       - v1
       security:
@@ -3627,7 +3739,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedLessonProgressList'
+                $ref: '#/components/schemas/PaginatedProgressLessonProgressList'
           description: ''
     post:
       operationId: v1_progress_lesson_progress_create
@@ -3641,13 +3753,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LessonProgressRequest'
+              $ref: '#/components/schemas/ProgressLessonProgressRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/LessonProgressRequest'
+              $ref: '#/components/schemas/ProgressLessonProgressRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/LessonProgressRequest'
+              $ref: '#/components/schemas/ProgressLessonProgressRequest'
         required: true
       security:
       - jwtAuth: []
@@ -3656,7 +3768,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LessonProgress'
+                $ref: '#/components/schemas/ProgressLessonProgress'
           description: ''
   /api/v1/progress/lesson-progress/{id}/:
     get:
@@ -3669,7 +3781,8 @@ paths:
       - in: path
         name: id
         schema:
-          type: string
+          type: integer
+        description: A unique integer value identifying this Lesson Progress.
         required: true
       tags:
       - v1
@@ -3680,7 +3793,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LessonProgress'
+                $ref: '#/components/schemas/ProgressLessonProgress'
           description: ''
     put:
       operationId: v1_progress_lesson_progress_update
@@ -3692,7 +3805,8 @@ paths:
       - in: path
         name: id
         schema:
-          type: string
+          type: integer
+        description: A unique integer value identifying this Lesson Progress.
         required: true
       tags:
       - v1
@@ -3700,13 +3814,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LessonProgressRequest'
+              $ref: '#/components/schemas/ProgressLessonProgressRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/LessonProgressRequest'
+              $ref: '#/components/schemas/ProgressLessonProgressRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/LessonProgressRequest'
+              $ref: '#/components/schemas/ProgressLessonProgressRequest'
         required: true
       security:
       - jwtAuth: []
@@ -3715,7 +3829,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LessonProgress'
+                $ref: '#/components/schemas/ProgressLessonProgress'
           description: ''
     patch:
       operationId: v1_progress_lesson_progress_partial_update
@@ -3727,7 +3841,8 @@ paths:
       - in: path
         name: id
         schema:
-          type: string
+          type: integer
+        description: A unique integer value identifying this Lesson Progress.
         required: true
       tags:
       - v1
@@ -3735,13 +3850,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedLessonProgressRequest'
+              $ref: '#/components/schemas/PatchedProgressLessonProgressRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedLessonProgressRequest'
+              $ref: '#/components/schemas/PatchedProgressLessonProgressRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedLessonProgressRequest'
+              $ref: '#/components/schemas/PatchedProgressLessonProgressRequest'
       security:
       - jwtAuth: []
       responses:
@@ -3749,7 +3864,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LessonProgress'
+                $ref: '#/components/schemas/ProgressLessonProgress'
           description: ''
     delete:
       operationId: v1_progress_lesson_progress_destroy
@@ -3761,7 +3876,8 @@ paths:
       - in: path
         name: id
         schema:
-          type: string
+          type: integer
+        description: A unique integer value identifying this Lesson Progress.
         required: true
       tags:
       - v1
@@ -3775,6 +3891,10 @@ paths:
       operationId: v1_progress_level_progress_list
       description: CRUD ya LevelProgress.
       parameters:
+      - in: query
+        name: level
+        schema:
+          type: integer
       - name: ordering
         required: false
         in: query
@@ -3787,6 +3907,13 @@ paths:
         description: A page number within the paginated result set.
         schema:
           type: integer
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - completed
+        description: '* `completed` - Completed'
       tags:
       - v1
       security:
@@ -3796,7 +3923,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedLevelProgressList'
+                $ref: '#/components/schemas/PaginatedProgressLevelProgressList'
           description: ''
     post:
       operationId: v1_progress_level_progress_create
@@ -3807,13 +3934,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LevelProgressRequest'
+              $ref: '#/components/schemas/ProgressLevelProgressRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/LevelProgressRequest'
+              $ref: '#/components/schemas/ProgressLevelProgressRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/LevelProgressRequest'
+              $ref: '#/components/schemas/ProgressLevelProgressRequest'
         required: true
       security:
       - jwtAuth: []
@@ -3822,7 +3949,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LevelProgress'
+                $ref: '#/components/schemas/ProgressLevelProgress'
           description: ''
   /api/v1/progress/level-progress/{id}/:
     get:
@@ -3832,7 +3959,8 @@ paths:
       - in: path
         name: id
         schema:
-          type: string
+          type: integer
+        description: A unique integer value identifying this Level Progress.
         required: true
       tags:
       - v1
@@ -3843,7 +3971,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LevelProgress'
+                $ref: '#/components/schemas/ProgressLevelProgress'
           description: ''
     put:
       operationId: v1_progress_level_progress_update
@@ -3852,7 +3980,8 @@ paths:
       - in: path
         name: id
         schema:
-          type: string
+          type: integer
+        description: A unique integer value identifying this Level Progress.
         required: true
       tags:
       - v1
@@ -3860,13 +3989,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LevelProgressRequest'
+              $ref: '#/components/schemas/ProgressLevelProgressRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/LevelProgressRequest'
+              $ref: '#/components/schemas/ProgressLevelProgressRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/LevelProgressRequest'
+              $ref: '#/components/schemas/ProgressLevelProgressRequest'
         required: true
       security:
       - jwtAuth: []
@@ -3875,7 +4004,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LevelProgress'
+                $ref: '#/components/schemas/ProgressLevelProgress'
           description: ''
     patch:
       operationId: v1_progress_level_progress_partial_update
@@ -3884,7 +4013,8 @@ paths:
       - in: path
         name: id
         schema:
-          type: string
+          type: integer
+        description: A unique integer value identifying this Level Progress.
         required: true
       tags:
       - v1
@@ -3892,13 +4022,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedLevelProgressRequest'
+              $ref: '#/components/schemas/PatchedProgressLevelProgressRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedLevelProgressRequest'
+              $ref: '#/components/schemas/PatchedProgressLevelProgressRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedLevelProgressRequest'
+              $ref: '#/components/schemas/PatchedProgressLevelProgressRequest'
       security:
       - jwtAuth: []
       responses:
@@ -3906,7 +4036,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LevelProgress'
+                $ref: '#/components/schemas/ProgressLevelProgress'
           description: ''
     delete:
       operationId: v1_progress_level_progress_destroy
@@ -3915,7 +4045,8 @@ paths:
       - in: path
         name: id
         schema:
-          type: string
+          type: integer
+        description: A unique integer value identifying this Level Progress.
         required: true
       tags:
       - v1
@@ -3932,19 +4063,25 @@ paths:
         → Overview ya safari ya user:
           - list ya levels (Seeker/Scholar/Missionary + sub-levels) na %
           - summary ya masomo yote (done/total/overall_pct)
+      summary: Get overall discipleship progress for the current user
       tags:
-      - v1
+      - Progress
       security:
       - jwtAuth: []
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyProgressResponse'
+          description: ''
   /api/v1/progress/mentee/{mentee_id}/:
     get:
       operationId: v1_progress_mentee_retrieve
       description: |-
         GET /api/v1/progress/mentee/<mentee_id>/
         → Mentor anaangalia progress ya mentee wake.
+      summary: Get discipleship progress for a mentee of the current mentor
       parameters:
       - in: path
         name: mentee_id
@@ -3952,12 +4089,16 @@ paths:
           type: integer
         required: true
       tags:
-      - v1
+      - Progress
       security:
       - jwtAuth: []
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MenteeProgressResponse'
+          description: ''
   /api/v1/shop/api/categories/:
     get:
       operationId: v1_shop_api_categories_list
@@ -4647,6 +4788,28 @@ components:
           type: string
       required:
       - name
+    DashboardStats:
+      type: object
+      description: Simple wrapper serializer kwa dashboard summary.
+      properties:
+        user_stats:
+          type: object
+          additionalProperties: {}
+        global_stats:
+          type: object
+          additionalProperties: {}
+        recent_missions:
+          type: array
+          items: {}
+        journey:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      required:
+      - global_stats
+      - journey
+      - recent_missions
+      - user_stats
     DataTypeEnum:
       enum:
       - string
@@ -4706,13 +4869,13 @@ components:
           type: boolean
           description: Kama true, lazima previous lesson iwe completed kabla ya hii.
         has_video:
-          type: string
+          type: boolean
           readOnly: true
         has_audio:
-          type: string
+          type: boolean
           readOnly: true
         has_pdf:
-          type: string
+          type: boolean
           readOnly: true
         created_at:
           type: string
@@ -4818,13 +4981,13 @@ components:
         is_published:
           type: boolean
         has_video:
-          type: string
+          type: boolean
           readOnly: true
         has_audio:
-          type: string
+          type: boolean
           readOnly: true
         has_pdf:
-          type: string
+          type: boolean
           readOnly: true
         created_at:
           type: string
@@ -4901,7 +5064,7 @@ components:
         is_active:
           type: boolean
         lessons_count:
-          type: string
+          type: integer
           readOnly: true
         created_at:
           type: string
@@ -4972,7 +5135,7 @@ components:
         is_active:
           type: boolean
         levels_count:
-          type: string
+          type: integer
           readOnly: true
         created_at:
           type: string
@@ -5431,59 +5594,33 @@ components:
         * `in_progress` - In Progress
         * `completed` - Completed
         * `verified` - Verified
-    LevelProgress:
+    LevelProgressSummary:
       type: object
       properties:
         id:
           type: integer
-          readOnly: true
-        user:
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        order:
           type: integer
-          readOnly: true
-        level:
+        path:
+          $ref: '#/components/schemas/PathSummary'
+        total_lessons:
           type: integer
-        status:
-          $ref: '#/components/schemas/LevelProgressStatusEnum'
-        completed_at:
-          type: string
-          format: date-time
-          readOnly: true
-        created_at:
-          type: string
-          format: date-time
-          readOnly: true
-        level_name:
-          type: string
-          readOnly: true
-        path_name:
-          type: string
-          readOnly: true
-        path_stage:
-          type: string
-          readOnly: true
+        percent:
+          type: integer
       required:
-      - completed_at
-      - created_at
       - id
-      - level
-      - level_name
-      - path_name
-      - path_stage
-      - user
-    LevelProgressRequest:
-      type: object
-      properties:
-        level:
-          type: integer
-        status:
-          $ref: '#/components/schemas/LevelProgressStatusEnum'
-      required:
-      - level
-    LevelProgressStatusEnum:
-      enum:
-      - completed
-      type: string
-      description: '* `completed` - Completed'
+      - name
+      - order
+      - path
+      - percent
+      - slug
+      - total_lessons
     MediaItem:
       type: object
       properties:
@@ -5578,6 +5715,72 @@ components:
         * `audio` - Audio
         * `image` - Image
         * `document` - Document
+    MenteeProgressResponse:
+      type: object
+      properties:
+        mentee:
+          $ref: '#/components/schemas/SimpleUser'
+        levels:
+          type: array
+          items:
+            $ref: '#/components/schemas/LevelProgressSummary'
+        summary:
+          $ref: '#/components/schemas/ProgressSummary'
+      required:
+      - levels
+      - mentee
+      - summary
+    MissionProgressMonthly:
+      type: object
+      properties:
+        missions:
+          type: integer
+        souls_reached:
+          type: integer
+        baptisms:
+          type: integer
+      required:
+      - baptisms
+      - missions
+      - souls_reached
+    MissionProgressResponse:
+      type: object
+      properties:
+        monthly:
+          $ref: '#/components/schemas/MissionProgressMonthly'
+        yearly:
+          $ref: '#/components/schemas/MissionProgressYearly'
+      required:
+      - monthly
+      - yearly
+    MissionProgressYearly:
+      type: object
+      properties:
+        missions:
+          type: integer
+        souls_reached:
+          type: integer
+        baptisms:
+          type: integer
+      required:
+      - baptisms
+      - missions
+      - souls_reached
+    MyProgressResponse:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/SimpleUser'
+        levels:
+          type: array
+          items:
+            $ref: '#/components/schemas/LevelProgressSummary'
+        summary:
+          $ref: '#/components/schemas/ProgressSummary'
+      required:
+      - levels
+      - summary
+      - user
     PaginatedCategoryList:
       type: object
       properties:
@@ -5718,26 +5921,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/LessonProgress'
-    PaginatedLevelProgressList:
-      type: object
-      properties:
-        count:
-          type: integer
-          example: 123
-        next:
-          type: string
-          nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?page=4
-        previous:
-          type: string
-          nullable: true
-          format: uri
-          example: http://api.example.org/accounts/?page=2
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/LevelProgress'
     PaginatedMediaItemList:
       type: object
       properties:
@@ -5818,6 +6001,46 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PrayerRequest'
+    PaginatedProgressLessonProgressList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProgressLessonProgress'
+    PaginatedProgressLevelProgressList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProgressLevelProgress'
     PaginatedQuizAttemptList:
       type: object
       properties:
@@ -6228,13 +6451,6 @@ components:
           type: string
         time_spent_minutes:
           type: integer
-    PatchedLevelProgressRequest:
-      type: object
-      properties:
-        level:
-          type: integer
-        status:
-          $ref: '#/components/schemas/LevelProgressStatusEnum'
     PatchedMediaItemRequest:
       type: object
       properties:
@@ -6315,6 +6531,27 @@ components:
           type: integer
         author:
           type: integer
+    PatchedProgressLessonProgressRequest:
+      type: object
+      description: |-
+        LessonProgress ya progress app (API version).
+        Tunaweka ref_name ili isigongane na LessonProgress ya app nyingine.
+      properties:
+        lesson:
+          type: integer
+        status:
+          $ref: '#/components/schemas/ProgressLessonProgressStatusEnum'
+        score:
+          type: integer
+          nullable: true
+    PatchedProgressLevelProgressRequest:
+      type: object
+      description: LevelProgress ya progress app.
+      properties:
+        level:
+          type: integer
+        status:
+          $ref: '#/components/schemas/ProgressLevelProgressStatusEnum'
     PatchedQuizRequest:
       type: object
       properties:
@@ -6572,6 +6809,22 @@ components:
           type: boolean
       required:
       - path
+    PathSummary:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        stage:
+          type: string
+        stage_label:
+          type: string
+      required:
+      - id
+      - name
+      - stage
+      - stage_label
     PostDetail:
       type: object
       properties:
@@ -6797,6 +7050,200 @@ components:
       required:
       - id
       - image
+    ProgressLessonProgress:
+      type: object
+      description: |-
+        LessonProgress ya progress app (API version).
+        Tunaweka ref_name ili isigongane na LessonProgress ya app nyingine.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          allOf:
+          - $ref: '#/components/schemas/ProgressUserMini'
+          readOnly: true
+        lesson:
+          type: integer
+        status:
+          $ref: '#/components/schemas/ProgressLessonProgressStatusEnum'
+        score:
+          type: integer
+          nullable: true
+        completed_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        lesson_title:
+          type: string
+          readOnly: true
+        level_name:
+          type: string
+          readOnly: true
+        path_name:
+          type: string
+          readOnly: true
+        path_stage:
+          type: string
+          readOnly: true
+      required:
+      - completed_at
+      - created_at
+      - id
+      - lesson
+      - lesson_title
+      - level_name
+      - path_name
+      - path_stage
+      - user
+    ProgressLessonProgressRequest:
+      type: object
+      description: |-
+        LessonProgress ya progress app (API version).
+        Tunaweka ref_name ili isigongane na LessonProgress ya app nyingine.
+      properties:
+        lesson:
+          type: integer
+        status:
+          $ref: '#/components/schemas/ProgressLessonProgressStatusEnum'
+        score:
+          type: integer
+          nullable: true
+      required:
+      - lesson
+    ProgressLessonProgressStatusEnum:
+      enum:
+      - not_started
+      - in_progress
+      - completed
+      type: string
+      description: |-
+        * `not_started` - Not started
+        * `in_progress` - In progress
+        * `completed` - Completed
+    ProgressLevelProgress:
+      type: object
+      description: LevelProgress ya progress app.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          allOf:
+          - $ref: '#/components/schemas/ProgressUserMini'
+          readOnly: true
+        level:
+          type: integer
+        status:
+          $ref: '#/components/schemas/ProgressLevelProgressStatusEnum'
+        completed_at:
+          type: string
+          format: date-time
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        level_name:
+          type: string
+          readOnly: true
+        path_name:
+          type: string
+          readOnly: true
+        path_stage:
+          type: string
+          readOnly: true
+      required:
+      - completed_at
+      - created_at
+      - id
+      - level
+      - level_name
+      - path_name
+      - path_stage
+      - user
+    ProgressLevelProgressRequest:
+      type: object
+      description: LevelProgress ya progress app.
+      properties:
+        level:
+          type: integer
+        status:
+          $ref: '#/components/schemas/ProgressLevelProgressStatusEnum'
+      required:
+      - level
+    ProgressLevelProgressStatusEnum:
+      enum:
+      - completed
+      type: string
+      description: '* `completed` - Completed'
+    ProgressSummary:
+      type: object
+      properties:
+        lessons_completed:
+          type: integer
+        total_lessons:
+          type: integer
+        overall_percent:
+          type: integer
+      required:
+      - lessons_completed
+      - overall_percent
+      - total_lessons
+    ProgressUserMini:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+      required:
+      - id
+      - username
+    ProgressUserMiniRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+      required:
+      - username
     QuestionTypeEnum:
       enum:
       - multiple_choice
@@ -7135,7 +7582,7 @@ components:
           maxLength: 140
           pattern: ^[-a-zA-Z0-9_]+$
         products_count:
-          type: string
+          type: integer
           readOnly: true
       required:
       - id
@@ -7194,7 +7641,9 @@ components:
           items:
             $ref: '#/components/schemas/ShopOrderItem'
         total_amount:
-          type: string
+          type: number
+          format: double
+          description: Jumla ya order = sum(unit_price * quantity) kwa kila item.
           readOnly: true
       required:
       - created_at
@@ -7237,7 +7686,8 @@ components:
           type: string
           maxLength: 40
         line_total:
-          type: string
+          type: number
+          format: double
           readOnly: true
       required:
       - id
@@ -7472,6 +7922,37 @@ components:
       required:
       - price
       - title
+    SimpleUser:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        first_name:
+          type: string
+        last_name:
+          type: string
+      required:
+      - id
+      - username
+    SiteSearchResponse:
+      type: object
+      properties:
+        query:
+          type: string
+        results:
+          type: object
+          additionalProperties: {}
+        total_results:
+          type: integer
+      required:
+      - query
+      - results
+      - total_results
     StageEnum:
       enum:
       - seeker
@@ -7595,6 +8076,26 @@ components:
           minLength: 1
       required:
       - token
+    TrackActivityRequestRequest:
+      type: object
+      properties:
+        activity_type:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        metadata:
+          type: object
+          additionalProperties: {}
+      required:
+      - activity_type
+    TrackActivityResponse:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+      - status
     UserActivity:
       type: object
       description: Activity log serializer.

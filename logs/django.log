@@ -5254,3 +5254,180 @@ django.urls.exceptions.NoReverseMatch: Reverse for 'event_detail' not found. 'ev
 [INFO] 2025-11-23 15:37:32,495 django.utils.autoreload: Watching for file changes with StatReloader
 [WARNING] 2025-11-23 15:37:41,123 django.request: Not Found: /
 [WARNING] 2025-11-23 15:37:41,702 django.request: Not Found: /favicon.ico
+[INFO] 2025-11-24 10:30:13,085 django.utils.autoreload: Watching for file changes with StatReloader
+[WARNING] 2025-11-24 10:30:18,790 django.request: Not Found: /
+[WARNING] 2025-11-24 10:30:19,210 django.request: Not Found: /favicon.ico
+[WARNING] 2025-11-24 10:31:08,406 django.request: Not Found: /
+[WARNING] 2025-11-24 10:31:08,558 django.request: Not Found: /favicon.ico
+[WARNING] 2025-11-24 11:55:01,855 django.request: Not Found: /api/events/upcoming/
+[WARNING] 2025-11-24 11:55:01,858 django.request: Not Found: /api/posts/featured/
+[WARNING] 2025-11-24 11:55:01,890 django.request: Not Found: /api/events/upcoming/
+[WARNING] 2025-11-24 11:55:02,016 django.request: Not Found: /api/posts/featured/
+[WARNING] 2025-11-24 11:55:33,812 django.request: Not Found: /api/posts/featured/
+[WARNING] 2025-11-24 11:55:33,814 django.request: Not Found: /api/events/upcoming/
+[WARNING] 2025-11-24 11:55:33,843 django.request: Not Found: /api/posts/featured/
+[WARNING] 2025-11-24 11:55:33,919 django.request: Not Found: /api/events/upcoming/
+[WARNING] 2025-11-24 11:59:45,354 django.request: Not Found: /api/posts/featured/
+[WARNING] 2025-11-24 11:59:45,359 django.request: Not Found: /api/events/upcoming/
+[WARNING] 2025-11-24 11:59:45,385 django.request: Not Found: /api/posts/featured/
+[WARNING] 2025-11-24 11:59:45,429 django.request: Not Found: /api/events/upcoming/
+[WARNING] 2025-11-24 12:00:15,766 django.request: Not Found: /api/events/upcoming/
+[WARNING] 2025-11-24 12:00:15,769 django.request: Not Found: /api/posts/featured/
+[WARNING] 2025-11-24 12:00:16,052 django.request: Not Found: /api/posts/featured/
+[WARNING] 2025-11-24 12:00:16,085 django.request: Not Found: /api/events/upcoming/
+[WARNING] 2025-11-24 12:12:19,274 django.request: Not Found: /api/events/upcoming/
+[WARNING] 2025-11-24 12:12:19,278 django.request: Not Found: /api/posts/featured/
+[WARNING] 2025-11-24 12:12:19,407 django.request: Not Found: /api/events/upcoming/
+[WARNING] 2025-11-24 12:12:19,432 django.request: Not Found: /api/posts/featured/
+[WARNING] 2025-11-24 12:23:12,433 django.request: Not Found: /api/posts/featured/
+[WARNING] 2025-11-24 12:23:12,438 django.request: Not Found: /api/events/upcoming/
+[WARNING] 2025-11-24 12:23:12,476 django.request: Not Found: /api/posts/featured/
+[WARNING] 2025-11-24 12:23:12,520 django.request: Not Found: /api/events/upcoming/
+[WARNING] 2025-11-24 12:23:39,876 django.request: Not Found: /api/events/upcoming/
+[WARNING] 2025-11-24 12:23:39,881 django.request: Not Found: /api/posts/featured/
+[WARNING] 2025-11-24 12:23:39,946 django.request: Not Found: /api/events/upcoming/
+[WARNING] 2025-11-24 12:23:40,007 django.request: Not Found: /api/posts/featured/
+[WARNING] 2025-11-24 12:24:02,112 django.request: Not Found: /api/events/upcoming/
+[WARNING] 2025-11-24 12:24:02,118 django.request: Not Found: /api/posts/featured/
+[WARNING] 2025-11-24 12:24:02,163 django.request: Not Found: /api/events/upcoming/
+[WARNING] 2025-11-24 12:24:02,173 django.request: Not Found: /api/posts/featured/
+[WARNING] 2025-11-24 12:24:15,724 django.request: Not Found: /api/v1/users/me/
+[WARNING] 2025-11-24 12:24:15,756 django.request: Not Found: /api/v1/users/me/
+[WARNING] 2025-11-24 12:38:29,872 django.request: Not Found: /api/v1/users/me/
+[WARNING] 2025-11-24 12:38:29,905 django.request: Not Found: /api/v1/users/me/
+[WARNING] 2025-11-24 12:38:32,227 django.request: Not Found: /api/posts/featured/
+[WARNING] 2025-11-24 12:38:32,231 django.request: Not Found: /api/events/upcoming/
+[WARNING] 2025-11-24 12:38:32,354 django.request: Not Found: /api/posts/featured/
+[WARNING] 2025-11-24 12:38:32,397 django.request: Not Found: /api/events/upcoming/
+[WARNING] 2025-11-24 16:04:06,296 django.request: Not Found: /v1/content/posts/
+[WARNING] 2025-11-24 16:04:06,363 django.request: Not Found: /v1/content/events/
+[WARNING] 2025-11-24 16:04:31,538 django.request: Not Found: /api/v1/events/
+[WARNING] 2025-11-24 16:04:31,650 django.request: Not Found: /api/v1/events/
+[INFO] 2025-11-24 16:04:55,427 core.middleware: Created discipleship journey for user: fidel
+[WARNING] 2025-11-24 16:04:55,833 django.request: Not Found: /v1/content/events/
+[WARNING] 2025-11-24 16:04:55,838 django.request: Not Found: /v1/content/posts/
+[WARNING] 2025-11-24 16:04:55,842 django.request: Not Found: /v1/core/api/user-activities/
+[WARNING] 2025-11-24 16:05:05,855 django.request: Not Found: /api/v1/users/me/
+[WARNING] 2025-11-24 16:05:06,032 django.request: Not Found: /api/v1/users/me/
+[WARNING] 2025-11-24 16:05:53,268 django.request: Not Found: /v1/content/posts/
+[WARNING] 2025-11-24 16:05:53,281 django.request: Not Found: /v1/content/events/
+[WARNING] 2025-11-24 16:05:53,375 django.request: Not Found: /v1/content/events/
+[WARNING] 2025-11-24 16:05:53,516 django.request: Not Found: /v1/content/posts/
+[WARNING] 2025-11-24 16:06:28,603 django.request: Not Found: /
+[WARNING] 2025-11-24 16:06:29,090 django.request: Not Found: /favicon.ico
+[ERROR] 2025-11-24 16:06:39,679 django.request: Internal Server Error: /admin/login/
+Traceback (most recent call last):
+  File "C:\projects\GodCares\Godcares\backend\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\projects\GodCares\Godcares\backend\venv\Lib\site-packages\django\core\handlers\base.py", line 220, in _get_response
+    response = response.render()
+  File "C:\projects\GodCares\Godcares\backend\venv\Lib\site-packages\django\template\response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\projects\GodCares\Godcares\backend\venv\Lib\site-packages\django\template\response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\projects\GodCares\Godcares\backend\venv\Lib\site-packages\django\template\backends\django.py", line 61, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\projects\GodCares\Godcares\backend\venv\Lib\site-packages\django\template\base.py", line 173, in render
+    with context.bind_template(self):
+         ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Python313\Lib\contextlib.py", line 141, in __enter__
+    return next(self.gen)
+  File "C:\projects\GodCares\Godcares\backend\venv\Lib\site-packages\django\template\context.py", line 251, in bind_template
+    processors = template.engine.template_context_processors + self._processors
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\projects\GodCares\Godcares\backend\venv\Lib\site-packages\django\utils\functional.py", line 57, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ~~~~~~~~~^^^^^^^^^^
+  File "C:\projects\GodCares\Godcares\backend\venv\Lib\site-packages\django\template\engine.py", line 116, in template_context_processors
+    return tuple(import_string(path) for path in context_processors)
+  File "C:\projects\GodCares\Godcares\backend\venv\Lib\site-packages\django\template\engine.py", line 116, in <genexpr>
+    return tuple(import_string(path) for path in context_processors)
+                 ~~~~~~~~~~~~~^^^^^^
+  File "C:\projects\GodCares\Godcares\backend\venv\Lib\site-packages\django\utils\module_loading.py", line 30, in import_string
+    return cached_import(module_path, class_name)
+  File "C:\projects\GodCares\Godcares\backend\venv\Lib\site-packages\django\utils\module_loading.py", line 15, in cached_import
+    module = import_module(module_path)
+  File "C:\Python313\Lib\importlib\__init__.py", line 88, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1324, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'content.context_processors'
+[ERROR] 2025-11-24 16:06:40,176 django.request: Internal Server Error: /admin/login/
+Traceback (most recent call last):
+  File "C:\projects\GodCares\Godcares\backend\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\projects\GodCares\Godcares\backend\venv\Lib\site-packages\django\core\handlers\base.py", line 220, in _get_response
+    response = response.render()
+  File "C:\projects\GodCares\Godcares\backend\venv\Lib\site-packages\django\template\response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\projects\GodCares\Godcares\backend\venv\Lib\site-packages\django\template\response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\projects\GodCares\Godcares\backend\venv\Lib\site-packages\django\template\backends\django.py", line 61, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\projects\GodCares\Godcares\backend\venv\Lib\site-packages\django\template\base.py", line 173, in render
+    with context.bind_template(self):
+         ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Python313\Lib\contextlib.py", line 141, in __enter__
+    return next(self.gen)
+  File "C:\projects\GodCares\Godcares\backend\venv\Lib\site-packages\django\template\context.py", line 251, in bind_template
+    processors = template.engine.template_context_processors + self._processors
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\projects\GodCares\Godcares\backend\venv\Lib\site-packages\django\utils\functional.py", line 57, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ~~~~~~~~~^^^^^^^^^^
+  File "C:\projects\GodCares\Godcares\backend\venv\Lib\site-packages\django\template\engine.py", line 116, in template_context_processors
+    return tuple(import_string(path) for path in context_processors)
+  File "C:\projects\GodCares\Godcares\backend\venv\Lib\site-packages\django\template\engine.py", line 116, in <genexpr>
+    return tuple(import_string(path) for path in context_processors)
+                 ~~~~~~~~~~~~~^^^^^^
+  File "C:\projects\GodCares\Godcares\backend\venv\Lib\site-packages\django\utils\module_loading.py", line 30, in import_string
+    return cached_import(module_path, class_name)
+  File "C:\projects\GodCares\Godcares\backend\venv\Lib\site-packages\django\utils\module_loading.py", line 15, in cached_import
+    module = import_module(module_path)
+  File "C:\Python313\Lib\importlib\__init__.py", line 88, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1324, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'content.context_processors'
+[WARNING] 2025-11-24 16:07:53,121 django.request: Not Found: /v1/content/posts/
+[WARNING] 2025-11-24 16:07:53,130 django.request: Not Found: /v1/core/api/user-activities/
+[WARNING] 2025-11-24 16:07:53,134 django.request: Not Found: /v1/content/events/
+[WARNING] 2025-11-24 16:09:38,390 django.request: Not Found: /api/v1/users/me/
+[WARNING] 2025-11-24 16:09:38,562 django.request: Not Found: /api/v1/users/me/
+[WARNING] 2025-11-24 16:14:38,848 django.request: Not Found: /v1/content/events/
+[WARNING] 2025-11-24 16:14:38,884 django.request: Not Found: /v1/content/posts/
+[WARNING] 2025-11-24 16:18:10,817 django.request: Not Found: /v1/content/posts/
+[WARNING] 2025-11-24 16:18:10,860 django.request: Not Found: /v1/content/events/
+[WARNING] 2025-11-24 16:18:13,463 django.request: Not Found: /v1/content/posts/
+[WARNING] 2025-11-24 16:18:13,637 django.request: Not Found: /v1/content/events/
+[WARNING] 2025-11-24 16:18:16,152 django.request: Not Found: /v1/content/posts/
+[WARNING] 2025-11-24 16:18:16,191 django.request: Not Found: /v1/content/events/
+[WARNING] 2025-11-24 16:18:17,326 django.request: Not Found: /v1/content/posts/
+[WARNING] 2025-11-24 16:18:17,419 django.request: Not Found: /v1/content/events/
+[WARNING] 2025-11-24 16:18:24,360 django.request: Not Found: /v1/content/posts/
+[WARNING] 2025-11-24 16:18:24,364 django.request: Not Found: /v1/content/events/
+[WARNING] 2025-11-24 16:18:27,266 django.request: Not Found: /v1/content/events/
+[WARNING] 2025-11-24 16:18:27,269 django.request: Not Found: /v1/content/posts/
+[WARNING] 2025-11-24 16:18:32,574 django.request: Not Found: /v1/content/posts/
+[WARNING] 2025-11-24 16:18:32,658 django.request: Not Found: /v1/content/events/
+[WARNING] 2025-11-24 16:18:36,374 django.request: Not Found: /v1/content/posts/
+[WARNING] 2025-11-24 16:18:36,422 django.request: Not Found: /v1/content/events/
+[WARNING] 2025-11-24 16:18:39,315 django.request: Not Found: /v1/content/posts/
+[WARNING] 2025-11-24 16:18:39,339 django.request: Not Found: /v1/content/events/
+[WARNING] 2025-11-24 16:18:49,329 django.request: Not Found: /v1/content/posts/
+[WARNING] 2025-11-24 16:18:49,492 django.request: Not Found: /v1/content/events/
+[WARNING] 2025-11-24 16:52:28,895 django.request: Bad Request: /api/v1/content/bible-study-groups/
+[WARNING] 2025-11-24 16:52:30,293 django.request: Not Found: /api/v1/content/bible-study-groups/1/join/
+[WARNING] 2025-11-24 16:52:33,045 django.request: Forbidden: /api/v1/content/categories/
+[WARNING] 2025-11-24 17:03:46,176 django.request: Forbidden: /api/v1/content/categories/
+[WARNING] 2025-11-24 17:03:50,138 django.request: Bad Request: /api/v1/content/mission-reports/

@@ -1,12 +1,19 @@
 # core/views.py
-from rest_framework import viewsets, status, permissions
+from django.db.models import Q, Count, Sum
+from django.contrib.auth.models import User  # unaweza usihitajike sana, lakini si shida
+
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import viewsets, status, permissions, serializers
 from rest_framework.decorators import api_view, permission_classes, action
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.db.models import Q, Count, Sum
-from django.contrib.auth.models import User  # (unaweza usihitajike sana, but ok)
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.filters import SearchFilter, OrderingFilter
+
+from drf_spectacular.utils import (
+    extend_schema,
+    inline_serializer,
+    OpenApiParameter,
+)
 
 from .models import UserActivity, SystemSetting
 from .serializers import (
@@ -106,6 +113,15 @@ class DashboardStatsAPIView(APIView):
     """
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(
+        summary="Get dashboard statistics for the authenticated user",
+        description=(
+            "Returns per-user mission stats, global counters, "
+            "recent missions and discipleship journey snapshot."
+        ),
+        responses=DashboardStatsSerializer,
+        tags=["Core"],
+    )
     def get(self, request):
         user = request.user
 
@@ -167,6 +183,30 @@ class DashboardStatsAPIView(APIView):
         return Response(serializer.data)
 
 
+@extend_schema(
+    summary="Global search across gospel content",
+    description=(
+        "Search posts, lessons, events and mission reports using a simple keyword query."
+    ),
+    parameters=[
+        OpenApiParameter(
+            name="q",
+            type=str,
+            location=OpenApiParameter.QUERY,
+            required=False,
+            description="Search keyword",
+        )
+    ],
+    responses=inline_serializer(
+        name="SiteSearchResponse",
+        fields={
+            "query": serializers.CharField(),
+            "results": serializers.DictField(),
+            "total_results": serializers.IntegerField(),
+        },
+    ),
+    tags=["Core"],
+)
 @api_view(["GET"])
 @permission_classes([permissions.AllowAny])
 def site_search(request):
@@ -226,6 +266,25 @@ def site_search(request):
     )
 
 
+@extend_schema(
+    summary="Track a single user activity event",
+    description="Records a user activity event for analytics and engagement tracking.",
+    request=inline_serializer(
+        name="TrackActivityRequest",
+        fields={
+            "activity_type": serializers.CharField(),
+            "description": serializers.CharField(required=False, allow_blank=True),
+            "metadata": serializers.DictField(required=False),
+        },
+    ),
+    responses=inline_serializer(
+        name="TrackActivityResponse",
+        fields={
+            "status": serializers.CharField(),
+        },
+    ),
+    tags=["Core"],
+)
 @api_view(["POST"])
 @permission_classes([permissions.IsAuthenticated])
 def track_activity(request):
@@ -263,6 +322,31 @@ class MissionProgressAPIView(APIView):
     """
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(
+        summary="Get mission progress (monthly & yearly) for authenticated missionary",
+        responses=inline_serializer(
+            name="MissionProgressResponse",
+            fields={
+                "monthly": inline_serializer(
+                    name="MissionProgressMonthly",
+                    fields={
+                        "missions": serializers.IntegerField(),
+                        "souls_reached": serializers.IntegerField(),
+                        "baptisms": serializers.IntegerField(),
+                    },
+                ),
+                "yearly": inline_serializer(
+                    name="MissionProgressYearly",
+                    fields={
+                        "missions": serializers.IntegerField(),
+                        "souls_reached": serializers.IntegerField(),
+                        "baptisms": serializers.IntegerField(),
+                    },
+                ),
+            },
+        ),
+        tags=["Core"],
+    )
     def get(self, request):
         from django.utils import timezone
         from datetime import timedelta

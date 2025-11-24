@@ -48,7 +48,7 @@ urlpatterns = [
     # Modular Content API (DRF)
     path(
         "api/v1/content/",
-        include(("content.api.urls", "content_api"), namespace="content_api"),
+        include(("content.urls", "content_api"), namespace="content_api"),
     ),
 
     # Hizi bado zinatumia urls za kawaida za app zao

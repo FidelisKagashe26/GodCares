@@ -89,7 +89,11 @@ class DiscipleshipLessonViewSet(viewsets.ModelViewSet):
             return DiscipleshipLessonDetailSerializer
         return DiscipleshipLessonListSerializer
 
-    @action(detail=True, methods=["post"], permission_classes=[permissions.IsAuthenticated])
+    @action(
+        detail=True,
+        methods=["post"],
+        permission_classes=[permissions.IsAuthenticated],
+    )
     def start(self, request, pk=None):
         """
         Muanzishe LessonProgress (status = in_progress)
@@ -103,7 +107,11 @@ class DiscipleshipLessonViewSet(viewsets.ModelViewSet):
         serializer = LessonProgressSerializer(progress)
         return Response(serializer.data)
 
-    @action(detail=True, methods=["post"], permission_classes=[permissions.IsAuthenticated])
+    @action(
+        detail=True,
+        methods=["post"],
+        permission_classes=[permissions.IsAuthenticated],
+    )
     def complete(self, request, pk=None):
         """
         Mark lesson as completed + update PathEnrollment progress
@@ -140,7 +148,11 @@ class DiscipleshipLessonViewSet(viewsets.ModelViewSet):
         serializer = LessonProgressSerializer(progress)
         return Response(serializer.data)
 
-    @action(detail=True, methods=["get"], permission_classes=[permissions.IsAuthenticated])
+    @action(
+        detail=True,
+        methods=["get"],
+        permission_classes=[permissions.IsAuthenticated],
+    )
     def my_progress(self, request, pk=None):
         """
         Rudisha progress ya current user kwenye lesson hii
@@ -177,6 +189,10 @@ class LessonProgressViewSet(viewsets.ModelViewSet):
     ordering = ["-created_at"]
 
     def get_queryset(self):
+        # Muhimu kwa drf-spectacular wakati wa kujenga schema
+        if getattr(self, "swagger_fake_view", False):
+            return LessonProgress.objects.none()
+
         qs = LessonProgress.objects.select_related(
             "user", "lesson", "lesson__level", "lesson__level__path"
         )
@@ -220,7 +236,7 @@ class PathEnrollmentViewSet(viewsets.ModelViewSet):
     """
     Enrollment kwenye paths.
     - User anaona / anadhibiti za kwake
-    - Admin anaweza kuona zote
+    - Admin anaona zote
     """
     serializer_class = PathEnrollmentSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -230,6 +246,10 @@ class PathEnrollmentViewSet(viewsets.ModelViewSet):
     ordering = ["-enrolled_at"]
 
     def get_queryset(self):
+        # Muhimu kwa drf-spectacular wakati wa kujenga schema
+        if getattr(self, "swagger_fake_view", False):
+            return PathEnrollment.objects.none()
+
         qs = PathEnrollment.objects.select_related(
             "user", "path", "current_level"
         )
@@ -273,7 +293,9 @@ class QuizViewSet(viewsets.ModelViewSet):
     - Watumiaji: wanasoma & kusubmit attempts
     - Admin: anaunda / anaedit
     """
-    queryset = Quiz.objects.select_related("lesson", "lesson__level", "lesson__level__path")
+    queryset = Quiz.objects.select_related(
+        "lesson", "lesson__level", "lesson__level__path"
+    )
     serializer_class = QuizSerializer
     permission_classes = [AdminOrReadOnly]
     filter_backends = [DjangoFilterBackend, OrderingFilter]
@@ -281,10 +303,15 @@ class QuizViewSet(viewsets.ModelViewSet):
     ordering_fields = ["created_at"]
     ordering = ["-created_at"]
 
-    @action(detail=True, methods=["post"], permission_classes=[permissions.IsAuthenticated])
+    @action(
+        detail=True,
+        methods=["post"],
+        permission_classes=[permissions.IsAuthenticated],
+    )
     def submit(self, request, pk=None):
         """
         User anatuma majibu ya quiz.
+
         Body inatarajiwa:
         {
           "answers": {
@@ -349,8 +376,8 @@ class QuizViewSet(viewsets.ModelViewSet):
 
                 correct_choice = question.choices.filter(is_correct=True).first()
                 if correct_choice and chosen_true is not None:
-                    correct_is_true = correct_choice.choice_text.strip().lower().startswith(
-                        "t"
+                    correct_is_true = (
+                        correct_choice.choice_text.strip().lower().startswith("t")
                     )
                     if chosen_true == correct_is_true:
                         score_points += question.points
@@ -394,6 +421,10 @@ class QuizAttemptViewSet(viewsets.ReadOnlyModelViewSet):
     ordering = ["-started_at"]
 
     def get_queryset(self):
+        # Muhimu kwa drf-spectacular wakati wa kujenga schema
+        if getattr(self, "swagger_fake_view", False):
+            return QuizAttempt.objects.none()
+
         qs = QuizAttempt.objects.select_related(
             "user", "quiz", "quiz__lesson"
         ).all()

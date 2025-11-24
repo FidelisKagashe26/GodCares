@@ -2643,9 +2643,10 @@
         "/api/v1/core/api/dashboard/stats/": {
             "get": {
                 "operationId": "v1_core_api_dashboard_stats_retrieve",
-                "description": "API for dashboard statistics (per-user + global mission stats).",
+                "description": "Returns per-user mission stats, global counters, recent missions and discipleship journey snapshot.",
+                "summary": "Get dashboard statistics for the authenticated user",
                 "tags": [
-                    "v1"
+                    "Core"
                 ],
                 "security": [
                     {
@@ -2654,7 +2655,14 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "No response body"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DashboardStats"
+                                }
+                            }
+                        },
+                        "description": ""
                     }
                 }
             }
@@ -2663,8 +2671,9 @@
             "get": {
                 "operationId": "v1_core_api_mission_progress_retrieve",
                 "description": "API for mission progress tracking (monthly & yearly per missionary).",
+                "summary": "Get mission progress (monthly & yearly) for authenticated missionary",
                 "tags": [
-                    "v1"
+                    "Core"
                 ],
                 "security": [
                     {
@@ -2673,7 +2682,14 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "No response body"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MissionProgressResponse"
+                                }
+                            }
+                        },
+                        "description": ""
                     }
                 }
             }
@@ -2681,9 +2697,20 @@
         "/api/v1/core/api/search/": {
             "get": {
                 "operationId": "v1_core_api_search_retrieve",
-                "description": "Global search across gospel content (posts, lessons, events, mission reports).",
+                "description": "Search posts, lessons, events and mission reports using a simple keyword query.",
+                "summary": "Global search across gospel content",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "q",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Search keyword"
+                    }
+                ],
                 "tags": [
-                    "v1"
+                    "Core"
                 ],
                 "security": [
                     {
@@ -2693,7 +2720,14 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "No response body"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SiteSearchResponse"
+                                }
+                            }
+                        },
+                        "description": ""
                     }
                 }
             }
@@ -2974,10 +3008,31 @@
         "/api/v1/core/api/track-activity/": {
             "post": {
                 "operationId": "v1_core_api_track_activity_create",
-                "description": "Track a single user activity event.",
+                "description": "Records a user activity event for analytics and engagement tracking.",
+                "summary": "Track a single user activity event",
                 "tags": [
-                    "v1"
+                    "Core"
                 ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TrackActivityRequestRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TrackActivityRequestRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TrackActivityRequestRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
                 "security": [
                     {
                         "jwtAuth": []
@@ -2985,7 +3040,14 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "No response body"
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TrackActivityResponse"
+                                }
+                            }
+                        },
+                        "description": ""
                     }
                 }
             }
@@ -3708,6 +3770,27 @@
                 "description": "View & manage LessonProgress.\n- Admin: anaona zote\n- User: anaona zake tu",
                 "parameters": [
                     {
+                        "in": "query",
+                        "name": "lesson",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "lesson__level",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "lesson__level__path",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
                         "name": "ordering",
                         "required": false,
                         "in": "query",
@@ -3724,6 +3807,20 @@
                         "schema": {
                             "type": "integer"
                         }
+                    },
+                    {
+                        "in": "query",
+                        "name": "status",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "completed",
+                                "in_progress",
+                                "not_started",
+                                "verified"
+                            ]
+                        },
+                        "description": "* `not_started` - Not Started\n* `in_progress` - In Progress\n* `completed` - Completed\n* `verified` - Verified"
                     }
                 ],
                 "tags": [
@@ -3801,8 +3898,9 @@
                         "in": "path",
                         "name": "id",
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         },
+                        "description": "A unique integer value identifying this Lesson Progress.",
                         "required": true
                     }
                 ],
@@ -3835,8 +3933,9 @@
                         "in": "path",
                         "name": "id",
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         },
+                        "description": "A unique integer value identifying this Lesson Progress.",
                         "required": true
                     }
                 ],
@@ -3889,8 +3988,9 @@
                         "in": "path",
                         "name": "id",
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         },
+                        "description": "A unique integer value identifying this Lesson Progress.",
                         "required": true
                     }
                 ],
@@ -3942,8 +4042,9 @@
                         "in": "path",
                         "name": "id",
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         },
+                        "description": "A unique integer value identifying this Lesson Progress.",
                         "required": true
                     }
                 ],
@@ -3971,8 +4072,9 @@
                         "in": "path",
                         "name": "id",
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         },
+                        "description": "A unique integer value identifying this Lesson Progress.",
                         "required": true
                     }
                 ],
@@ -4753,8 +4855,15 @@
         "/api/v1/discipleship/api/path-enrollments/": {
             "get": {
                 "operationId": "v1_discipleship_api_path_enrollments_list",
-                "description": "Enrollment kwenye paths.\n- User anaona / anadhibiti za kwake\n- Admin anaweza kuona zote",
+                "description": "Enrollment kwenye paths.\n- User anaona / anadhibiti za kwake\n- Admin anaona zote",
                 "parameters": [
+                    {
+                        "in": "query",
+                        "name": "is_active",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
                     {
                         "name": "ordering",
                         "required": false,
@@ -4769,6 +4878,13 @@
                         "required": false,
                         "in": "query",
                         "description": "A page number within the paginated result set.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "path",
                         "schema": {
                             "type": "integer"
                         }
@@ -4797,7 +4913,7 @@
             },
             "post": {
                 "operationId": "v1_discipleship_api_path_enrollments_create",
-                "description": "Enrollment kwenye paths.\n- User anaona / anadhibiti za kwake\n- Admin anaweza kuona zote",
+                "description": "Enrollment kwenye paths.\n- User anaona / anadhibiti za kwake\n- Admin anaona zote",
                 "tags": [
                     "v1"
                 ],
@@ -4843,14 +4959,15 @@
         "/api/v1/discipleship/api/path-enrollments/{id}/": {
             "get": {
                 "operationId": "v1_discipleship_api_path_enrollments_retrieve",
-                "description": "Enrollment kwenye paths.\n- User anaona / anadhibiti za kwake\n- Admin anaweza kuona zote",
+                "description": "Enrollment kwenye paths.\n- User anaona / anadhibiti za kwake\n- Admin anaona zote",
                 "parameters": [
                     {
                         "in": "path",
                         "name": "id",
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         },
+                        "description": "A unique integer value identifying this Path Enrollment.",
                         "required": true
                     }
                 ],
@@ -4877,14 +4994,15 @@
             },
             "put": {
                 "operationId": "v1_discipleship_api_path_enrollments_update",
-                "description": "Enrollment kwenye paths.\n- User anaona / anadhibiti za kwake\n- Admin anaweza kuona zote",
+                "description": "Enrollment kwenye paths.\n- User anaona / anadhibiti za kwake\n- Admin anaona zote",
                 "parameters": [
                     {
                         "in": "path",
                         "name": "id",
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         },
+                        "description": "A unique integer value identifying this Path Enrollment.",
                         "required": true
                     }
                 ],
@@ -4931,14 +5049,15 @@
             },
             "patch": {
                 "operationId": "v1_discipleship_api_path_enrollments_partial_update",
-                "description": "Enrollment kwenye paths.\n- User anaona / anadhibiti za kwake\n- Admin anaweza kuona zote",
+                "description": "Enrollment kwenye paths.\n- User anaona / anadhibiti za kwake\n- Admin anaona zote",
                 "parameters": [
                     {
                         "in": "path",
                         "name": "id",
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         },
+                        "description": "A unique integer value identifying this Path Enrollment.",
                         "required": true
                     }
                 ],
@@ -4984,14 +5103,15 @@
             },
             "delete": {
                 "operationId": "v1_discipleship_api_path_enrollments_destroy",
-                "description": "Enrollment kwenye paths.\n- User anaona / anadhibiti za kwake\n- Admin anaweza kuona zote",
+                "description": "Enrollment kwenye paths.\n- User anaona / anadhibiti za kwake\n- Admin anaona zote",
                 "parameters": [
                     {
                         "in": "path",
                         "name": "id",
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         },
+                        "description": "A unique integer value identifying this Path Enrollment.",
                         "required": true
                     }
                 ],
@@ -5351,6 +5471,27 @@
                         "schema": {
                             "type": "integer"
                         }
+                    },
+                    {
+                        "in": "query",
+                        "name": "passed",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "quiz",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "quiz__lesson",
+                        "schema": {
+                            "type": "integer"
+                        }
                     }
                 ],
                 "tags": [
@@ -5384,8 +5525,9 @@
                         "in": "path",
                         "name": "id",
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         },
+                        "description": "A unique integer value identifying this Quiz Attempt.",
                         "required": true
                     }
                 ],
@@ -5692,7 +5834,7 @@
         "/api/v1/discipleship/api/quizzes/{id}/submit/": {
             "post": {
                 "operationId": "v1_discipleship_api_quizzes_submit_create",
-                "description": "User anatuma majibu ya quiz.\nBody inatarajiwa:\n{\n  \"answers\": {\n    \"question_id\": [choice_ids] / \"true\"/\"false\"/\"some text\",\n    ...\n  },\n  \"time_spent_minutes\": 5\n}",
+                "description": "User anatuma majibu ya quiz.\n\nBody inatarajiwa:\n{\n  \"answers\": {\n    \"question_id\": [choice_ids] / \"true\"/\"false\"/\"some text\",\n    ...\n  },\n  \"time_spent_minutes\": 5\n}",
                 "parameters": [
                     {
                         "in": "path",
@@ -7398,6 +7540,35 @@
                     "name"
                 ]
             },
+            "DashboardStats": {
+                "type": "object",
+                "description": "Simple wrapper serializer kwa dashboard summary.",
+                "properties": {
+                    "user_stats": {
+                        "type": "object",
+                        "additionalProperties": {}
+                    },
+                    "global_stats": {
+                        "type": "object",
+                        "additionalProperties": {}
+                    },
+                    "recent_missions": {
+                        "type": "array",
+                        "items": {}
+                    },
+                    "journey": {
+                        "type": "object",
+                        "additionalProperties": {},
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "global_stats",
+                    "journey",
+                    "recent_missions",
+                    "user_stats"
+                ]
+            },
             "DataTypeEnum": {
                 "enum": [
                     "string",
@@ -7473,15 +7644,15 @@
                         "description": "Kama true, lazima previous lesson iwe completed kabla ya hii."
                     },
                     "has_video": {
-                        "type": "string",
+                        "type": "boolean",
                         "readOnly": true
                     },
                     "has_audio": {
-                        "type": "string",
+                        "type": "boolean",
                         "readOnly": true
                     },
                     "has_pdf": {
-                        "type": "string",
+                        "type": "boolean",
                         "readOnly": true
                     },
                     "created_at": {
@@ -7622,15 +7793,15 @@
                         "type": "boolean"
                     },
                     "has_video": {
-                        "type": "string",
+                        "type": "boolean",
                         "readOnly": true
                     },
                     "has_audio": {
-                        "type": "string",
+                        "type": "boolean",
                         "readOnly": true
                     },
                     "has_pdf": {
-                        "type": "string",
+                        "type": "boolean",
                         "readOnly": true
                     },
                     "created_at": {
@@ -7733,7 +7904,7 @@
                         "type": "boolean"
                     },
                     "lessons_count": {
-                        "type": "string",
+                        "type": "integer",
                         "readOnly": true
                     },
                     "created_at": {
@@ -7828,7 +7999,7 @@
                         "type": "boolean"
                     },
                     "levels_count": {
-                        "type": "string",
+                        "type": "integer",
                         "readOnly": true
                     },
                     "created_at": {
@@ -8603,6 +8774,59 @@
                     "levels",
                     "mentee",
                     "summary"
+                ]
+            },
+            "MissionProgressMonthly": {
+                "type": "object",
+                "properties": {
+                    "missions": {
+                        "type": "integer"
+                    },
+                    "souls_reached": {
+                        "type": "integer"
+                    },
+                    "baptisms": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "baptisms",
+                    "missions",
+                    "souls_reached"
+                ]
+            },
+            "MissionProgressResponse": {
+                "type": "object",
+                "properties": {
+                    "monthly": {
+                        "$ref": "#/components/schemas/MissionProgressMonthly"
+                    },
+                    "yearly": {
+                        "$ref": "#/components/schemas/MissionProgressYearly"
+                    }
+                },
+                "required": [
+                    "monthly",
+                    "yearly"
+                ]
+            },
+            "MissionProgressYearly": {
+                "type": "object",
+                "properties": {
+                    "missions": {
+                        "type": "integer"
+                    },
+                    "souls_reached": {
+                        "type": "integer"
+                    },
+                    "baptisms": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "baptisms",
+                    "missions",
+                    "souls_reached"
                 ]
             },
             "MyProgressResponse": {
@@ -10353,7 +10577,7 @@
                     "user": {
                         "allOf": [
                             {
-                                "$ref": "#/components/schemas/UserMini"
+                                "$ref": "#/components/schemas/ProgressUserMini"
                             }
                         ],
                         "readOnly": true
@@ -10447,7 +10671,7 @@
                     "user": {
                         "allOf": [
                             {
-                                "$ref": "#/components/schemas/UserMini"
+                                "$ref": "#/components/schemas/ProgressUserMini"
                             }
                         ],
                         "readOnly": true
@@ -10531,6 +10755,68 @@
                     "lessons_completed",
                     "overall_percent",
                     "total_lessons"
+                ]
+            },
+            "ProgressUserMini": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "username": {
+                        "type": "string",
+                        "description": "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.",
+                        "pattern": "^[\\w.@+-]+$",
+                        "maxLength": 150
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "title": "Email address",
+                        "maxLength": 254
+                    },
+                    "first_name": {
+                        "type": "string",
+                        "maxLength": 150
+                    },
+                    "last_name": {
+                        "type": "string",
+                        "maxLength": 150
+                    }
+                },
+                "required": [
+                    "id",
+                    "username"
+                ]
+            },
+            "ProgressUserMiniRequest": {
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.",
+                        "pattern": "^[\\w.@+-]+$",
+                        "maxLength": 150
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "title": "Email address",
+                        "maxLength": 254
+                    },
+                    "first_name": {
+                        "type": "string",
+                        "maxLength": 150
+                    },
+                    "last_name": {
+                        "type": "string",
+                        "maxLength": 150
+                    }
+                },
+                "required": [
+                    "username"
                 ]
             },
             "QuestionTypeEnum": {
@@ -11454,6 +11740,26 @@
                     "username"
                 ]
             },
+            "SiteSearchResponse": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string"
+                    },
+                    "results": {
+                        "type": "object",
+                        "additionalProperties": {}
+                    },
+                    "total_results": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "query",
+                    "results",
+                    "total_results"
+                ]
+            },
             "StageEnum": {
                 "enum": [
                     "seeker",
@@ -11615,6 +11921,36 @@
                 },
                 "required": [
                     "token"
+                ]
+            },
+            "TrackActivityRequestRequest": {
+                "type": "object",
+                "properties": {
+                    "activity_type": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "metadata": {
+                        "type": "object",
+                        "additionalProperties": {}
+                    }
+                },
+                "required": [
+                    "activity_type"
+                ]
+            },
+            "TrackActivityResponse": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "status"
                 ]
             },
             "UserActivity": {

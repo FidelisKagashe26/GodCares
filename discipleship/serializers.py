@@ -1,6 +1,7 @@
 # discipleship/serializers.py
 from rest_framework import serializers
 from django.contrib.auth.models import User
+from drf_spectacular.utils import extend_schema_field
 
 from .models import (
     DiscipleshipPath,
@@ -41,7 +42,8 @@ class DiscipleshipPathSerializer(serializers.ModelSerializer):
             "created_at",
         ]
 
-    def get_levels_count(self, obj):
+    @extend_schema_field(serializers.IntegerField)
+    def get_levels_count(self, obj) -> int:
         return obj.levels.count()
 
 
@@ -65,7 +67,8 @@ class DiscipleshipLevelSerializer(serializers.ModelSerializer):
             "created_at",
         ]
 
-    def get_lessons_count(self, obj):
+    @extend_schema_field(serializers.IntegerField)
+    def get_lessons_count(self, obj) -> int:
         return obj.lessons.filter(is_published=True).count()
 
 
@@ -99,14 +102,17 @@ class DiscipleshipLessonListSerializer(serializers.ModelSerializer):
             "created_at",
         ]
 
-    def get_has_video(self, obj):
+    @extend_schema_field(serializers.BooleanField)
+    def get_has_video(self, obj) -> bool:
         # DiscipleshipLesson ina video_url tu, hakuna embed_code
         return bool(getattr(obj, "video_url", None))
 
-    def get_has_audio(self, obj):
+    @extend_schema_field(serializers.BooleanField)
+    def get_has_audio(self, obj) -> bool:
         return bool(getattr(obj, "audio_url", None))
 
-    def get_has_pdf(self, obj):
+    @extend_schema_field(serializers.BooleanField)
+    def get_has_pdf(self, obj) -> bool:
         return bool(getattr(obj, "pdf_file", None))
 
 
@@ -141,13 +147,16 @@ class DiscipleshipLessonDetailSerializer(serializers.ModelSerializer):
             "updated_at",
         ]
 
-    def get_has_video(self, obj):
+    @extend_schema_field(serializers.BooleanField)
+    def get_has_video(self, obj) -> bool:
         return bool(getattr(obj, "video_url", None))
 
-    def get_has_audio(self, obj):
+    @extend_schema_field(serializers.BooleanField)
+    def get_has_audio(self, obj) -> bool:
         return bool(getattr(obj, "audio_url", None))
 
-    def get_has_pdf(self, obj):
+    @extend_schema_field(serializers.BooleanField)
+    def get_has_pdf(self, obj) -> bool:
         return bool(getattr(obj, "pdf_file", None))
 
 
